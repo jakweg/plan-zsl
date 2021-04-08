@@ -1,0 +1,20 @@
+
+main {
+  padding: 8px;
+  text-align: center;
+}
+
+.routes>a {
+  padding: 4px 8px;
+  margin: 4px;
+  display: inline-block;
+  text-decoration: none;
+  color: var(--color-font-primary);
+  border: 1px solid #999;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.routes>a:hover {
+  background-color: var(--color-background-hover);
+}

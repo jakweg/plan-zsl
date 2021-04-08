@@ -1,0 +1,14 @@
+<label>
+  <input type="text" autocomplete="on" autocapitalize="off" (input)="onSearchPhraseChanged($event.target)"
+         (keyup)="enterPressed($event)" [placeholder]="searchType" #inputElement>
+</label>
+
+<div class="error-msg" *ngIf="status === 'E'">
+  <h1 class="emoji">😞</h1>
+  Jesteś offline, odśwież stronę gdy połączysz się z Internetem
+</div>
+
+<div class="simple-list" *ngIf="allEntities">
+  <a [routerLink]="['/plan', e[0]]" *ngFor="let e of allEntities"
+    [ngStyle]="{display: e[3] ? null : 'none'}">{{e[1]}}</a>
+</div>

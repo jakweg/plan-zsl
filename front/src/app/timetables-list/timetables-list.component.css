@@ -1,0 +1,10 @@
+.simple-list a{
+  color: var(--color-font-primary);
+  text-decoration: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.simple-list a>* {
+  flex: 1;
+}

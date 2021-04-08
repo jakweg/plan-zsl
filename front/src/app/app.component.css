@@ -1,0 +1,74 @@
+header {
+  z-index: 20;
+  box-shadow: 0 0 6px black;
+  position: sticky;
+  top: 0;
+  margin: 0;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 8px;
+  font-size: 1.2em;
+  display: grid;
+  color: white;
+  vertical-align: middle;
+  grid-template-areas: 'back title icons';
+  grid-template-columns: auto 1fr auto;
+  background-color: var(--color-primary);
+  align-items: center;
+}
+
+header .icon {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  cursor: pointer;
+  transition: background-color .3s;
+  border-radius: 4px;
+  user-select: none;
+  background-color: transparent;
+  flex: 1 1;
+}
+
+header .icon svg,
+header .icon img {
+  width: 32px;
+  height: 32px;
+}
+
+header .icon img {
+  filter: invert(1);
+}
+
+header svg path {
+  fill: white;
+}
+
+header .icon:hover {
+  background-color: var(--color-primary-dark);
+}
+
+header .title {
+  overflow: hidden;
+  text-align: center;
+  margin: 0;
+  font-size: 1.2em;
+  grid-area: title;
+}
+
+header .icons {
+  grid-area: icons;
+  display: flex;
+}
+
+header>a {
+  text-decoration: none;
+  color: inherit;
+}
+
+footer {
+  font-size: .75em;
+  margin-top: 10px;
+  text-align: center;
+  display: block;
+  padding: 8px 2px;
+}

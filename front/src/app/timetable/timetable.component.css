@@ -1,0 +1,278 @@
+.timetable-container {
+  scroll-snap-type: x mandatory;
+  scroll-snap-stop: always;
+  width: 100%;
+  scroll-behavior: smooth;
+  overflow-x: auto;
+  border-radius: 8px 8px 0 0;
+  border: 2px solid var(--color-primary);
+  animation: fade-in .3s;
+
+  --background-group: var(--color-background);
+  --background-empty: var(--color-background-hover);
+  --group-border-color: rgba(0, 0, 0, .7);
+}
+
+@media (prefers-color-scheme: dark) {
+  .timetable-container {
+    --background-group: var(--color-background-hover);
+    --background-empty: var(--color-background);
+    --group-border-color: #666;
+  }
+}
+
+.timetable {
+  --row-height: 46px;
+  width: max-content;
+  display: block;
+}
+
+.timetable > * {
+  vertical-align: top;
+  display: inline-block;
+  scroll-snap-align: end;
+  scroll-snap-stop: always;
+}
+
+.timetable > * > * {
+  height: var(--row-height);
+  overflow: hidden;
+  align-items: center;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.periods {
+  background-color: var(--color-primary);
+  flex: 0;
+  color: white;
+  position: sticky;
+  left: -35px;
+  box-shadow: 0 0 4px rgba(0, 0, 0, .7);
+  z-index: 10;
+  transition: left .2s;
+}
+
+.periods:hover {
+  z-index: 10;
+  left: 0;
+}
+
+.periods > * {
+  border-top: 1px solid #aaa;
+  padding: 2px 4px 2px 0;
+  display: grid;
+  grid-template-areas: 'number start' 'number end';
+  grid-template-columns: 38px auto;
+}
+
+.periods > *:first-child {
+  border-top: none;
+}
+
+.periods .number {
+  padding: 2px;
+  font-size: 1.3em;
+  font-weight: bold;
+  grid-area: number;
+}
+
+.startTime {
+  color: #ddd;
+  grid-area: start;
+}
+
+.endTime {
+  color: #ddd;
+  grid-area: end;
+}
+
+
+.day {
+  font-size: .9em;
+  flex: 1;
+  min-width: 240px;
+  background-color: var(--background-empty);
+}
+
+
+@media only screen and (min-width: 800px) {
+  .timetable {
+    width: 100%;
+    display: flex;
+  }
+
+  .day {
+    min-width: unset;
+  }
+}
+
+.timetable .day > *:first-child {
+  color: white;
+  background-color: var(--color-primary);
+  justify-content: center;
+  align-items: center;
+  font-size: 1.3em;
+}
+
+.timetable .day > * {
+  transition: opacity .3s;
+  display: flex;
+  flex: 1;
+  align-items: stretch;
+  justify-content: center;
+}
+
+.loading .timetable .day > * {
+  opacity: 0;
+}
+
+
+.day > *:not(:first-child) {
+  border-top: 1px solid var(--group-border-color);
+}
+
+.day {
+  border-left: 1px solid var(--group-border-color);
+}
+
+.day > *:not(:first-child).left-groups > :not(.entire-class) {
+  border-right: 1px solid var(--group-border-color);
+  /* fix border gap*/
+  margin-left: 1px;
+}
+
+.day > *:not(:first-child).right-groups > *,
+.day > *:not(:first-child) > *:not(:first-child) {
+  border-left: 1px solid var(--group-border-color);
+}
+
+.timetable .day > *.left-groups {
+  justify-content: flex-start;
+}
+
+.timetable .day > *.right-groups {
+  justify-content: flex-end;
+}
+
+.day .group {
+  box-sizing: border-box;
+  background-color: var(--background-group);
+  min-width: 85px;
+  flex: 1;
+  display: grid;
+  grid-template-areas: 'subject subject' 'teacher classroom';
+  align-items: center;
+}
+
+.timetable.single-lessons-only .day .group:not(.entire-class) {
+  max-width: 50%;
+}
+
+@media only screen and (max-width: 400px) {
+  .day {
+    min-width: calc(90vw - 35px);
+  }
+}
+
+
+.group > * {
+  padding: 2px;
+}
+
+.entire-class.group > *:nth-child(1) {
+  font-size: 1.1em;
+}
+
+.group > *:nth-child(1) {
+  grid-area: subject;
+  min-width: 80px;
+  vertical-align: baseline;
+}
+
+.group > *:nth-child(1) > * {
+  padding: 2px;
+  vertical-align: baseline;
+  opacity: .8;
+  font-size: .8em;
+}
+
+.group > *:nth-child(2) {
+  grid-area: teacher;
+  font-size: .8em;
+}
+
+
+.group > *:nth-child(3) {
+  grid-area: classroom;
+  font-size: .8em;
+}
+
+.alert-dialog main a {
+  display: block;
+  color: var(--color-font-primary);
+  text-decoration: none;
+  padding: 6px;
+  border-bottom: 1px solid #aaa;
+}
+
+.alert-dialog main svg {
+  height: 32px;
+  width: 32px;
+}
+
+.alert-dialog main a:last-child {
+  border-bottom: none;
+}
+
+.alert-dialog main a span {
+  padding: 6px;
+}
+
+.alert-dialog main a > * {
+  vertical-align: middle;
+}
+
+@media screen and (min-width: 400px) {
+  .timetable-container {
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+  }
+
+  .day {
+    scroll-snap-stop: always;
+    scroll-snap-align: end;
+  }
+}
+
+.bookmark-hint {
+  color: var(--on-accent);
+  margin: 0 0 4px auto;
+  background-color: var(--color-accent);
+  max-width: 250px;
+  padding: 4px;
+  border-radius: 4px;
+  display: grid;
+  grid-template-columns: 1fr 30px;
+  grid-template-rows: 30px auto;
+  align-items: center;
+  grid-template-areas:
+    'title icon'
+    'content content';
+  box-shadow: 0 0 4px black;
+}
+
+.bookmark-hint>:nth-child(1) {
+  grid-area: title;
+  font-size: 1.1em;
+  text-align: center;
+}
+.bookmark-hint>:nth-child(2) {
+  grid-area: icon;
+  width: 30px;
+  height: 30px;
+}
+.bookmark-hint>:nth-child(3) {
+  grid-area: content;
+  margin: 0 4px;
+}

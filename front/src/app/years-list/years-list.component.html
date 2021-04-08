@@ -1,0 +1,12 @@
+<div class="error-msg" *ngIf="status === 'E'">
+  <h1 class="emoji">😞</h1>
+  Jesteś offline, odśwież stronę gdy połączysz się z Internetem
+</div>
+
+<div *ngIf="status === 'O'">
+  <div *ngIf="classes" class="year-list">
+    <a [routerLink]="['/klasy', year.year]" *ngFor="let year of classes" (click)="year.selected = !year.selected">
+      Klasy {{year.year}}
+    </a>
+  </div>
+</div>

@@ -1,0 +1,24 @@
+<form class="form" (submit)="submit($event);">
+  <div class="loading-overlay" [class.hidden]="!working">
+    <p>Trwa przesyłanie i przetwarzanie pliku <br>Proszę czekać...</p>
+  </div>
+
+  <label>
+    <span>Nazwa planu lekcji:</span>
+    <input name="name" type="text" placeholder="Nazwa planu lekcji">
+  </label>
+
+  <label>
+    <span>Obowiązuje od:</span>
+    <input name="isValidFrom" type="date" placeholder="Obowiązuje od">
+  </label>
+
+  <label>
+    <span>Plik do wysłania</span>
+    <input name="file" accept=".xml" type="file" placeholder="Plik do wysłania">
+  </label>
+
+  <p class="error" [class.hidden]="!(error && !working)">Błąd: {{error}}</p>
+
+  <input type="submit" value="Utwórz" class="nice-btn">
+</form>

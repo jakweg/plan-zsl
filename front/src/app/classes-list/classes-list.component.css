@@ -1,0 +1,42 @@
+.status>p {
+  text-align: center;
+  font-size: 1.5em;
+}
+
+.profile-cards {
+  animation: fade-in .5s;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.profile-cards>* {
+  border-radius: 8px;
+  color: white;
+  background-color: var(--color-primary);
+  flex: 1;
+  padding: 8px;
+  margin: 8px;
+  box-shadow: 0 0 4px rgba(0, 0, 0, .7);
+  max-width: 300px;
+  min-width: 180px;
+}
+
+.profile-cards>*>p {
+  margin: 2px 2px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.profile-cards .simple-list>* {
+  display: block;
+  color: black;
+  text-decoration: none;
+  background-color: #EEE;
+  transition: background-color .2s;
+}
+
+.profile-cards .simple-list>*:hover {
+  background-color: #DDD;
+}

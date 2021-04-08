@@ -1,0 +1,30 @@
+{
+  "name": "timetablebackend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "tsc && node dist/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jakub Węgrzyn",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "express-session": "^1.17.0",
+    "express-static": "^1.2.6",
+    "formidable": "^1.2.1",
+    "text-encoding": "^0.7.0",
+    "xml2js": "^0.4.22"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.1",
+    "@types/formidable": "^1.0.31",
+    "@types/text-encoding": "0.0.35",
+    "@types/express-serve-static-core": "^4.0.50",
+    "@types/xml2js": "^0.4.5",
+    "eslint": "^6.5.1",
+    "tsc": "^1.20150623.0"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "adminLogin": "admin",
+  "adminPassword": "admin",
+  "serveFrontFrom": "./front/dist/zsltimetable",
+  "timetablesPath": "./timetables"
+}

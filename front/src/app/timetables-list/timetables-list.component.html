@@ -1,0 +1,21 @@
+<p *ngIf="error">Wystąpił błąd, odśwież stronę</p>
+
+<div *ngIf="!error && timetables">
+
+  <p *ngIf="!timetables.length">
+    Brak planów lekcji, <a routerLink="/admin/nowy-plan">Prześlij pierwszy</a>
+  </p>
+  <div *ngIf="timetables.length">
+    <p>Lista utworzonych planów lekcji:
+      <br><small>(Kliknij w któryś, aby zarządzać)</small>
+    </p>
+
+    <div class="simple-list">
+      <a *ngFor="let t of timetables" [routerLink]="['/admin','plany', t.id]">
+        <small>obowiązuje od {{t.isValidFrom|date: 'dd.MM.yy'}}</small>
+        <span>{{t.name}}</span>
+        <small>aktywny: <strong>{{t.active ? 'TAK' : 'NIE'}}</strong></small>
+      </a>
+    </div>
+  </div>
+</div>

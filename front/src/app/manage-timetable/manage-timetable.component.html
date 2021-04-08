@@ -1,0 +1,69 @@
+<p *ngIf="error">Wystąpił błąd, odśwież stronę</p>
+<p *ngIf="deleted">Plan został usunięty pomyślnie <br>
+  <a class="nice-btn" routerLink="/admin">Przejdź do listy planów</a>
+</p>
+
+<form class="form" *ngIf="!error && !deleted">
+  <div class="loading-overlay" [class.hidden]="info">
+    <p>Trwa ładowanie...</p>
+  </div>
+
+  <label>
+    <span>Nazwa planu lekcji:</span>
+    <input id="name" type="text" [value]="info.name" [readonly]="!editingName ? 'on' : null">
+    <a (click)="editingName = true" *ngIf="!editingName" class="edit-btn">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="black-icon">
+        <path
+          d="M14.06 9.02l.92.92L5.92 19H5v-.92l9.06-9.06M17.66 3c-.25 0-.51.1-.7.29l-1.83 1.83 3.75 3.75 1.83-1.83c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.2-.2-.45-.29-.71-.29zm-3.6 3.19L3 17.25V21h3.75L17.81 9.94l-3.75-3.75z"/>
+      </svg>
+    </a>
+
+    <a (click)="save()" *ngIf="editingName" class="edit-btn">
+      <svg xmlns="http://www.w3.org/2000/svg" class="black-icon" width="24" height="24" viewBox="0 0 24 24">
+        <path
+          d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm2 16H5V5h11.17L19 7.83V19zm-7-7c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zM6 6h9v4H6z"/>
+      </svg>
+    </a>
+  </label>
+
+  <label>
+    <span>Obowiązuje od:</span>
+    <input id="date" type="date" [value]="isValidFrom" [readonly]="editingDate ? null : 'on'">
+    <a (click)="editingDate = true" *ngIf="!editingDate" class="edit-btn">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="black-icon">
+        <path
+          d="M14.06 9.02l.92.92L5.92 19H5v-.92l9.06-9.06M17.66 3c-.25 0-.51.1-.7.29l-1.83 1.83 3.75 3.75 1.83-1.83c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.2-.2-.45-.29-.71-.29zm-3.6 3.19L3 17.25V21h3.75L17.81 9.94l-3.75-3.75z"/>
+      </svg>
+    </a>
+
+    <a (click)="save()" *ngIf="editingDate" class="edit-btn">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="black-icon">
+        <path
+          d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm2 16H5V5h11.17L19 7.83V19zm-7-7c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zM6 6h9v4H6z"/>
+      </svg>
+    </a>
+  </label>
+  <hr>
+
+  <p *ngIf="info.selected">
+    Ten plan jest wybrany jako aktualny i jest pokazywany użytkownikom. <br>
+    <small *ngIf="!info.autoEnabled">Plan został wybrany ręcznie.</small>
+    <small *ngIf="info.autoEnabled">Plan został wybrany automatycznie.</small>
+  </p>
+
+  <small *ngIf="!info.selected && info.autoEnabled">Nie można aktywować tego planu,
+    ponieważ włączony jest automatyczny wybór po stronie serwera.
+    Możesz <a routerLink="/admin/ustawienia" style="color:inherit">zmienić to</a> w ustawieniach serwera.
+  </small>
+
+  <a class="nice-btn" (click)="deleteThisPlan()"
+     *ngIf="!info.selected">
+    Usuń ten plan
+  </a>
+
+  <a class="nice-btn" (click)="activateThisPlan()"
+     *ngIf="!info.selected && !info.autoEnabled">
+    Aktywuj ten plan
+  </a>
+
+</form>

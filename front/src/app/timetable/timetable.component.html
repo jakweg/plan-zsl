@@ -1,0 +1,108 @@
+<div class="error-msg" *ngIf="status === 'N'">
+  <h1 class="emoji">😶</h1>
+  Nie znaleziono tego planu
+</div>
+
+<div class="error-msg" *ngIf="status === 'E'">
+  <h1 class="emoji">😞</h1>
+  Jesteś offline, odśwież stronę gdy połączysz się z Internetem
+</div>
+
+<div *ngIf="showBookmarkHint" class="bookmark-hint">
+  <span>Często tu bywasz?</span>
+  <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
+    <path
+      fill="white"
+      d="M13 19V7.83l4.88 4.88c.39.39 1.03.39 1.42 0 .39-.39.39-1.02 0-1.41l-6.59-6.59c-.39-.39-1.02-.39-1.41 0l-6.6 6.58c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0L11 7.83V19c0 .55.45 1 1 1s1-.45 1-1z"/>
+  </svg>
+  <p>Dodaj plan do zakładek i miej go na ekranie głównym!</p>
+</div>
+
+<div [class.loading]="status === 'L'">
+  <div class="timetable-container" *ngIf="!!timetable">
+    <div class="timetable" [class.single-lessons-only]="timetable.type === 'C'">
+      <div class="periods">
+        <div><span class="number">l.</span></div>
+        <div *ngFor="let p of timetable.periods">
+          <span class="number">{{p.num}}</span>
+          <span class="startTime">{{p.start}}</span>
+          <span class="endTime">{{p.end}}</span>
+        </div>
+      </div>
+
+      <div class="day" *ngFor="let day of daysOfWeek" [id]="'el_' + day[0]">
+        <div>
+          <p class="column-title">{{day[1]}}</p>
+        </div>
+        <div [class.empty]="!l" *ngFor="let l of timetable[day[0]]"
+             [class.right-groups]="!!l && l.length === 1 && l[0].groupNum > 1"
+             [class.left-groups]="!!l && l.length === 1 && l[0].groupNum < 2">
+          <div class="group" [class.entire-class]="g.entireClass" *ngFor="let g of (l || [])"
+               (click)="onGroupClicked(g)">
+            <span>{{g.subject}}<span *ngIf="!g.entireClass">{{g.group}}</span></span>
+            <span>{{g.class || g.teacher}}</span>
+            <span>{{g.classroom || g.teacher}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="alert-dialog" *ngIf="dialogParams" [class.dialog-gone]="!dialogParams.showing"
+     [style.display]="dialogParams.isGone ? 'none' : null">
+  <div class="alert-dialog-overlay" (click)="onCloseDialog()"></div>
+  <div>
+    <header>
+      <span>Szczegóły lekcji</span>
+      <a (click)="onCloseDialog()" class="icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+          <path fill="white"
+                d="M18.3 5.71c-.39-.39-1.02-.39-1.41 0L12 10.59 7.11 5.7c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41L10.59 12 5.7 16.89c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0L12 13.41l4.89 4.89c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L13.41 12l4.89-4.89c.38-.38.38-1.02 0-1.4z"/>
+        </svg>
+      </a>
+    </header>
+    <main>
+      <a>
+        <svg class="black-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+          <path
+            d="M12 2l-5.5 9h11L12 2zm0 3.84L13.93 9h-3.87L12 5.84zM17.5 13c-2.49 0-4.5 2.01-4.5 4.5s2.01 4.5 4.5 4.5 4.5-2.01 4.5-4.5-2.01-4.5-4.5-4.5zm0 7c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5zM3 21.5h8v-8H3v8zm2-6h4v4H5v-4z"/>
+        </svg>
+        <span>{{dialogParams.subject}}</span>
+      </a>
+
+      <a *ngIf="dialogParams.clazz" [routerLink]="['/plan', dialogParams.clazz]">
+        <svg class="black-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+          <path
+            d="M9 13.75c-2.34 0-7 1.17-7 3.5V19h14v-1.75c0-2.33-4.66-3.5-7-3.5zM4.34 17c.84-.58 2.87-1.25 4.66-1.25s3.82.67 4.66 1.25H4.34zM9 12c1.93 0 3.5-1.57 3.5-3.5S10.93 5 9 5 5.5 6.57 5.5 8.5 7.07 12 9 12zm0-5c.83 0 1.5.67 1.5 1.5S9.83 10 9 10s-1.5-.67-1.5-1.5S8.17 7 9 7zm7.04 6.81c1.16.84 1.96 1.96 1.96 3.44V19h4v-1.75c0-2.02-3.5-3.17-5.96-3.44zM15 12c1.93 0 3.5-1.57 3.5-3.5S16.93 5 15 5c-.54 0-1.04.13-1.5.35.63.89 1 1.98 1 3.15s-.37 2.26-1 3.15c.46.22.96.35 1.5.35z"/>
+        </svg>
+        <span>Klasa {{dialogParams.clazz}}</span>
+      </a>
+
+      <a *ngIf="!!dialogParams.teacher" [routerLink]="['/plan', dialogParams.teacher[0]]">
+        <svg class="black-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+          <path
+            d="M19 5v14H5V5h14m0-2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 9c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3zm0-4c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1zm6 10H6v-1.53c0-2.5 3.97-3.58 6-3.58s6 1.08 6 3.58V18zm-9.69-2h7.38c-.69-.56-2.38-1.12-3.69-1.12s-3.01.56-3.69 1.12z"/>
+        </svg>
+        <span>{{dialogParams.teacher[1]}}</span>
+      </a>
+
+      <a *ngIf="!!dialogParams.classroom" [routerLink]="['/plan', dialogParams.classroom[0]]">
+        <svg class="black-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+          <path
+            d="M12 9c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0-6c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm0 8.55C9.64 9.35 6.48 8 3 8v11c3.48 0 6.64 1.35 9 3.55 2.36-2.19 5.52-3.55 9-3.55V8c-3.48 0-6.64 1.35-9 3.55zm7 5.58c-2.53.34-4.93 1.3-7 2.82-2.06-1.52-4.47-2.49-7-2.83v-6.95c2.1.38 4.05 1.35 5.64 2.83L12 14.28l1.36-1.27c1.59-1.48 3.54-2.45 5.64-2.83v6.95z"/>
+        </svg>
+        <span>{{dialogParams.classroom[1]}}</span>
+      </a>
+
+
+      <a *ngIf="!!dialogParams.classroom" [href]="mapLink + '?' + dialogParams.classroom[0]">
+        <svg class="black-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+          <path
+            d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM10 5.47l4 1.4v11.66l-4-1.4V5.47zm-5 .99l3-1.01v11.7l-3 1.16V6.46zm14 11.08l-3 1.01V6.86l3-1.16v11.84z"/>
+        </svg>
+        <span>Wyświetl salę na mapie</span>
+      </a>
+    </main>
+  </div>
+</div>

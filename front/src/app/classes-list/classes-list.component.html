@@ -1,0 +1,30 @@
+<div class="error-msg" *ngIf="status === 'E'" xmlns:svg="" xmlns:svg="" xmlns:svg="">
+  <h1 class="emoji">😞</h1>
+  Jesteś offline, odśwież stronę gdy połączysz się z Internetem
+</div>
+
+<div class="error-msg" *ngIf="status === 'N'">
+  <h1 class="emoji">🙃</h1>
+  Takie klasy nie istnieją
+</div>
+
+
+<div *ngIf="status === 'O'">
+  <div *ngIf="profiles" class="profile-cards">
+    <div *ngFor="let p of profiles|keyvalue">
+      <p>
+        <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+          <!--suppress XmlUnboundNsPrefix -->
+          <svg:g>
+            <!--suppress CheckTagEmptyBody, HtmlUnknownAttribute, XmlUnboundNsPrefix -->
+            <svg:path fill="white" [attr.d]="profileInfo[p.key][1]"></svg:path>
+          </svg:g>
+        </svg>
+        <span>{{profileInfo[p.key][0]}}</span>
+      </p>
+      <div class="simple-list">
+        <a [routerLink]="['/plan',c]" *ngFor="let c of p.value">{{c}}</a>
+      </div>
+    </div>
+  </div>
+</div>

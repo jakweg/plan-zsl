@@ -1,0 +1,105 @@
+.cards {
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  text-align: center;
+  justify-content: center;
+}
+
+.cards>* {
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: 6px;
+  position: relative;
+  flex: auto;
+  margin: 8px;
+  padding: 4px;
+  color: white;
+  transition: background-color .3s, opacity .5s;
+  background-color: var(--color-primary);
+  box-shadow: 0 0 4px rgba(0, 0, 0, .7);
+  min-width: 300px;
+  max-width: 500px;
+  display: grid;
+  grid-template-areas: 'icon title';
+  grid-template-columns: 50px auto;
+  align-items: center;
+}
+
+.cards>:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.cards>*>* {
+  margin: 0;
+}
+
+.pwa-btn-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+
+.cards>*>svg,
+.cards>*>img {
+  grid-area: icon;
+  height: 40px;
+  width: 40px;
+  padding: 4px;
+  fill: white;
+}
+
+.cards>*>.title {
+  grid-area: title;
+  font-size: 1.3em;
+}
+
+.cards>*.saved-plans {
+  display: grid;
+  grid-template-areas:
+    'icon title'
+    'icon entities';
+}
+
+
+.cards .entities {
+  grid-area: entities;
+  display: block;
+  margin: 0 auto;
+  width: auto;
+}
+
+.cards .entities>a {
+  background: #fff;
+  padding: 4px;
+  text-decoration: none;
+  color: black;
+  border-radius: 8px;
+  font-size: 1.1em;
+  display: inline-block;
+  margin: 4px;
+  transition: background-color .2s;
+}
+
+.cards .entities>a:hover {
+  background: #eee;
+
+}
+
+.new-plan-notification {
+  text-align: center;
+  padding: 2px;
+}
+.new-plan-notification>* {
+  color: white;
+  text-decoration: none;
+  display: inline-block;
+  width: auto;
+  padding: 2px 6px 6px;
+  border-radius: 4px;
+  background-color: var(--color-accent);
+}
+.new-plan-notification>*>* {
+  padding: 4px;
+  vertical-align: middle;
+}

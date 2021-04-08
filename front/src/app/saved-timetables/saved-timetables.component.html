@@ -1,0 +1,30 @@
+<div class="error-msg" *ngIf="error">
+  <h1 class="emoji">😞</h1>
+  Jesteś offline, odśwież stronę gdy połączysz się z Internetem
+</div>
+
+<div>
+  <p *ngIf="bookmarks && !bookmarks.length" class="hint">Wygląda na to, że jeszcze nie masz żadnego planu w zakładkach</p>
+
+  <div *ngIf="bookmarks && bookmarks.length" cdkDropList class="simple-list" (cdkDropListDropped)="drop($event)">
+    <a [routerLink]="['/plan', e[0]]" *ngFor="let e of bookmarks" cdkDrag class="bookmark">
+      <span>{{e[1] || e[0]}}</span>
+
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24"
+           viewBox="0 0 24 24" class="black-icon">
+        <defs>
+          <path id="a" d="M0 0h24v24H0V0z"/>
+        </defs>
+        <clipPath id="b">
+          <use xlink:href="#a" overflow="visible"/>
+        </clipPath>
+        <path clip-path="url(#b)" d="M20 9H4v2h16V9zM4 15h16v-2H4v2z"/>
+      </svg>
+    </a>
+  </div>
+</div>
+
+<p class="hint" (click)="fillBookmark = !fillBookmark">
+  <img class="black-icon" [src]="'/assets/bookmark-' + (fillBookmark ? 'fill' : 'empty') + '.svg'" alt="">
+  <span>Dodawaj plany do zakładek używając ikonki takiej jak po lewej, znajdziesz ją po otwarciu planu.</span>
+</p>

@@ -1,0 +1,62 @@
+.simple-list {
+  max-width: 500px;
+  margin: 0 auto;
+}
+.hint {
+  padding: 10px;
+  margin: 0 auto;
+  max-width: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hint>* {
+  padding: 4px;
+}
+
+.bookmark {
+  color: var(--color-font-primary);
+  text-decoration: none;
+  cursor: pointer;
+  padding: 10px 6px;
+  border-bottom: solid 1px #ccc;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+.bookmark svg {
+  cursor: move;
+  border-radius: 4px;
+}
+.bookmark svg:hover {
+  background-color: #fff;
+}
+
+.cdk-drag-preview {
+  background-color: var(--color-background-hover);
+  cursor: move;
+  box-sizing: border-box;
+  border-radius: 4px;
+  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+  0 8px 10px 1px rgba(0, 0, 0, 0.14),
+  0 3px 14px 2px rgba(0, 0, 0, 0.12);
+}
+
+.cdk-drag-placeholder {
+  opacity: 0;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.bookmark:last-child {
+  border: none;
+}
+
+.simple-list.cdk-drop-list-dragging .bookmark:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}

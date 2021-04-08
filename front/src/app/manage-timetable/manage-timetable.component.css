@@ -1,0 +1,17 @@
+label {
+  padding: 0;
+}
+
+.edit-btn {
+  cursor: pointer;
+  flex: none;
+  padding: 4px;
+  border-radius: 8px;
+  margin: 4px;
+  transition: background-color .3s;
+}
+
+.edit-btn:hover {
+  background-color: var(--color-background-hover);
+}
+

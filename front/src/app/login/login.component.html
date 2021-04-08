@@ -1,0 +1,18 @@
+<form (submit)="submit($event)" class="form" >
+  <div class="loading-overlay" [class.hidden]="!isAuthorizing">
+    <p>Trwa logowanie...</p>
+  </div>
+  <label>
+    <span>Nazwa użytkownika</span>
+    <input name="login" type="text" placeholder="Nazwa użytkownika" required autocomplete="off" autocapitalize="none">
+  </label>
+
+  <label>
+    <span>Hasło</span>
+    <input name="password" type="password" placeholder="Hasło" required>
+  </label>
+
+  <p class="error" [class.hidden]="!(triedToSignIn && !isAuthorizing)">Błędny login lub hasło</p>
+
+  <input type="submit" value="Zaloguj się" class="nice-btn">
+</form>

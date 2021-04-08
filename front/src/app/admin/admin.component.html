@@ -1,0 +1,15 @@
+<main *ngIf="isSignedIn">
+  <p>Użytkowniku, jesteś zalogowany. </p>
+  <div class="routes">
+    <a routerLink="/admin/nowy-plan">Nowy plan</a>
+    <a routerLink="/admin/">Wybór planu</a>
+    <a routerLink="/admin/ustawienia">Ustawienia serwera</a>
+    <a (click)="logout()">Wyloguj się</a>
+  </div>
+
+  <hr>
+
+  <router-outlet></router-outlet>
+</main>
+
+<app-login *ngIf="!isSignedIn"></app-login>

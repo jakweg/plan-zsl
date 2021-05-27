@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "public",
+    "public": "front/dist/zsltimetable",
     "ignore": [
       "firebase.json",
       "**/.*",

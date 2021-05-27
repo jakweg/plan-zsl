@@ -1,5 +1,5 @@
 <form (submit)="submit($event)" class="form" >
-  <div class="loading-overlay" [class.hidden]="!isAuthorizing">
+  <div class="loading-overlay" [class.hidden]="false">
     <p>Trwa logowanie...</p>
   </div>
   <label>
@@ -11,8 +11,6 @@
     <span>Hasło</span>
     <input name="password" type="password" placeholder="Hasło" required>
   </label>
-
-  <p class="error" [class.hidden]="!(triedToSignIn && !isAuthorizing)">Błędny login lub hasło</p>
 
   <input type="submit" value="Zaloguj się" class="nice-btn">
 </form>

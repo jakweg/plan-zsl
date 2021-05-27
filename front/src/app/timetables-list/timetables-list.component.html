@@ -14,7 +14,6 @@
       <a *ngFor="let t of timetables" [routerLink]="['/admin','plany', t.id]">
         <small>obowiązuje od {{t.isValidFrom|date: 'dd.MM.yy'}}</small>
         <span>{{t.name}}</span>
-        <small>aktywny: <strong>{{t.active ? 'TAK' : 'NIE'}}</strong></small>
       </a>
     </div>
   </div>

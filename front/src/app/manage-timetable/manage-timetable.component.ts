@@ -27,17 +27,6 @@ export class ManageTimetableComponent implements OnInit {
       });
   }
 
-  activateThisPlan() {
-    (async () => {
-      try {
-        await this.service.selectTimetable(this.thisId);
-        await this.refresh();
-      } catch (e) {
-        this.error = e;
-      }
-    })();
-  }
-
   deleteThisPlan() {
     (async () => {
       try {
@@ -55,7 +44,7 @@ export class ManageTimetableComponent implements OnInit {
 
   private async refresh() {
       try {
-        this.info = await this.service.getTimetableInfo(this.thisId);
+        this.info = await this.service.getTimetableInfo(+this.thisId);
         this.editingName = false;
         this.editingDate = false;
       } catch (e) {

@@ -1,4 +1,5 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core'
+import { Subscription } from 'rxjs'
 import {AdminService} from '../admin.service';
 import {log} from 'util';
 import {TimetableInfo} from '../model/timetable-info';
@@ -8,18 +9,21 @@ import {TimetableInfo} from '../model/timetable-info';
   templateUrl: './timetables-list.component.html',
   styleUrls: ['./timetables-list.component.css']
 })
-export class TimetablesListComponent implements OnInit {
+export class TimetablesListComponent implements OnInit, OnDestroy {
 
   constructor(private service: AdminService) {
   }
 
   error: any;
   timetables: TimetableInfo[];
+  private sub: Subscription;
 
   ngOnInit() {
-    this.service.getTimetables()
-      .then(r => this.timetables = r)
-      .catch(e => this.error = e);
+    this.sub = this.service.appState
+        .subscribe((state) => this.timetables = state.timetables || []);
+  }
+  ngOnDestroy() {
+    this.sub.unsubscribe();
   }
 
 }

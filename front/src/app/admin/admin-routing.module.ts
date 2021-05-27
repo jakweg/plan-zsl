@@ -6,7 +6,6 @@ import {AdminService} from '../admin.service';
 import {TimetablesListComponent} from '../timetables-list/timetables-list.component';
 import {NewTimetableComponent} from '../new-timetable/new-timetable.component';
 import {ManageTimetableComponent} from '../manage-timetable/manage-timetable.component';
-import {AdminSettingsComponent} from '../admin-settings/admin-settings.component';
 
 const routes: Routes = [
   {
@@ -14,7 +13,6 @@ const routes: Routes = [
     children: [
       {path: '', component: TimetablesListComponent},
       {path: 'nowy-plan', component: NewTimetableComponent},
-      {path: 'ustawienia', component: AdminSettingsComponent},
       {path: 'plany/:id', component: ManageTimetableComponent},
     ],
   },

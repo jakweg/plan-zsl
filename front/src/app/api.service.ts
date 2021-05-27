@@ -12,9 +12,10 @@ import {AppService} from './app.service';
 export class ApiService {
 
   // private API_BASE_LINK = isDevMode() ? "http://localhost:6823/" : "/api/";
-  private API_BASE_LINK = isDevMode() ? 'http://192.168.1.22:6823/' : '/api/';
+  // private API_BASE_LINK = isDevMode() ? 'http://192.168.1.22:6823/' : '/api/';
+  private API_BASE_LINK = 'https://storage.googleapis.com/zsl-plan.appspot.com/';
   private httpOptions = {
-    withCredentials: true,
+    withCredentials: false,
     headers: new HttpHeaders({})
   };
   private readonly timetables: TimetableStore;

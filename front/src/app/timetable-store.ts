@@ -1,194 +1,222 @@
-import {Observable} from 'rxjs';
-import {TimetableInfo} from './model/timetable-info';
-import {TimetableModel} from './model/timetable';
-import {AppService} from './app.service';
+import { Observable } from 'rxjs';
+import { TimetableModel } from './model/timetable';
+import { TimetableInfo } from './model/timetable-info';
 
 export type DownloadFunction = (url: string[]) => Observable<any>;
 type DatabaseCallback = (db: IDBDatabase) => Promise<any>;
 type PromiseProducer = () => Promise<any>;
 
 export interface TimetableStore {
-  getAvailableTimetablesList(): Promise<TimetableInfo[]>;
+    /** Forces refreshing information, even if it should be fresh, other methods may call this method as well */
+    forceRefreshData(): Promise<any>
 
-  getCurrentTimetableId(): Promise<number>;
+    /** Gets list of timetables - objects containing ID, name and starting date */
+    getAvailableTimetablesList(): Promise<TimetableInfo[]>;
 
-  selectTimetable(id: number): void;
+    /** Gets number that indicates ID of the timetable that is active now, will take into consideration all timetables, but ignores user preference */
+    getCurrentTimetableId(): Promise<number>;
 
-  getTimetableSummary(timetableId: number): Promise<any>;
+    /** Returns information about specific timetable such as list of classes plans, classrooms plans etc */
+    getTimetableSummary(timetableId: number): Promise<any>;
 
-  getPlan(timetableId: number, name: string): Promise<TimetableModel>;
+    /** Returns information about specific plan inside specific timetable */
+    getPlan(timetableId: number, name: string): Promise<TimetableModel>;
 }
 
-export class NoCacheStore implements TimetableStore {
-  constructor(protected httpDownloader: DownloadFunction) {
-  }
 
-  getAvailableTimetablesList(): Promise<TimetableInfo[]> {
-    return this.httpGet2Promise(['timetable', 'list']);
-  }
+export class IndexedDBStore implements TimetableStore {
+    private currentAppStatus: any = null;
+    private toDoOnReady: ((IDBDatabase) => void)[] = [];
+    private database: IDBDatabase;
+    private isDbReady = false;
 
-  getTimetableSummary(timetableId: number): Promise<any> {
-    return this.httpGet2Promise(['timetable', (+timetableId).toString(), 'list']);
-  }
+    constructor(private readonly httpDownloader: DownloadFunction) {
+        if (!window.indexedDB) throw new Error();
 
-  getPlan(timetableId: number, name: string): Promise<TimetableModel> {
-    return this.httpGet2Promise(['timetable', (+timetableId).toString(), 'get', name]);
-  }
+        const dbRequest = indexedDB.open('main-v1', 1);
 
-  async getCurrentTimetableId(): Promise<number> {
-    const id = AppService.selectedTimetableId;
-    return id || await this.getAutoTimetable();
-  }
+        dbRequest.onupgradeneeded = () => {
+            dbRequest.result.createObjectStore('descriptions');
+            dbRequest.result.createObjectStore('plans');
+        };
 
-  selectTimetable(id: number) {
-    AppService.selectedTimetableId = id;
-  }
+        dbRequest.onsuccess = () => {
+            this.isDbReady = true;
+            this.database = dbRequest.result;
+            for (const todo of this.toDoOnReady) {
+                todo(this.database);
+            }
+            this.toDoOnReady.splice(0, this.toDoOnReady.length);
+        };
 
-  private httpGet2Promise(url: string[]): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.httpDownloader(url)
-        .subscribe(v => resolve(v), e => reject(e));
-    });
-  }
+        dbRequest.onerror = () => {
+            console.error('Unable to open database!');
 
-  private async getAutoTimetable(): Promise<number> {
-    const cacheCurrentIdUntil = new Date(AppService.cacheCurrentIdUntil);
-    if (!cacheCurrentIdUntil || cacheCurrentIdUntil < new Date()) {
-      try {
-        const response = await this.httpGet2Promise(['timetable', 'status']);
+            this.isDbReady = true;
 
-        AppService.cacheCurrentIdUntil = response.cacheCurrentUntil;
-        AppService.nextTimetableChange = response.nextChange;
-        AppService.currentTimetableId = response.currentTimetableId;
-        AppService.useNewMap = !!response.useNewMap;
+            for (const todo of this.toDoOnReady) {
+                todo(this.database);
+            }
+            this.toDoOnReady.splice(0, this.toDoOnReady.length);
+        };
 
-      } catch (e) {
-        // Unable to connect to server, then check if we have cache
-        if (!AppService.currentTimetableId) {
-          throw e;
-        }
-      }
+        const appStatus = JSON.parse(localStorage.getItem('app-status') || '{}');
+        if (!appStatus.timetables)
+            appStatus.timetables = [];
+        this.currentAppStatus = appStatus;
     }
 
-    return +AppService.currentTimetableId;
-  }
-}
-
-export class IndexedDBStore extends NoCacheStore {
-  private toDoOnReady: ((IDBDatabase) => void)[] = [];
-  private database: IDBDatabase;
-  private isDbReady = false;
-
-  constructor(httpDownloader: DownloadFunction) {
-    super(httpDownloader);
-    if (!window.indexedDB) throw new Error();
-
-    const dbRequest = indexedDB.open('main-v1', 1);
-
-    dbRequest.onupgradeneeded = () => {
-      dbRequest.result.createObjectStore('timetables', {keyPath: 'id'});
-      dbRequest.result.createObjectStore('descriptions');
-      dbRequest.result.createObjectStore('plans');
-    };
-
-    dbRequest.onsuccess = () => {
-      this.isDbReady = true;
-      this.database = dbRequest.result;
-      for (const todo of this.toDoOnReady) {
-        todo(this.database);
-      }
-      this.toDoOnReady.splice(0, this.toDoOnReady.length);
-    };
-    dbRequest.onerror = () => {
-      console.error('Unable to open database! Fallback to NoCacheStore...');
-
-      this.isDbReady = true;
-
-      for (const todo of this.toDoOnReady) {
-        todo(this.database);
-      }
-      this.toDoOnReady.splice(0, this.toDoOnReady.length);
-    };
-  }
-
-  getAvailableTimetablesList(): Promise<TimetableInfo[]> {
-    return this.doWhenOnDbReady(db => new Promise((done, err) => {
-      if (!this.database) return super.getAvailableTimetablesList().then(done, err).catch(err);
-
-      super.getAvailableTimetablesList()
-        .then(result => {
-          const tx = db.transaction('timetables', 'readwrite');
-          tx.onerror = e => err(e);
-          const store = tx.objectStore('timetables');
-          for (const e of result) {
-            store.put(e);
-          }
-
-          done(result);
-        }).catch(() => {
-        // we are offline?
-        const req = db.transaction('timetables', 'readonly')
-          .objectStore('timetables').getAll();
-        req.transaction.oncomplete = () => done(req.result);
-        req.transaction.onerror = e => err(e);
-      });
-    }));
-  }
-
-  getPlan(timetableId: number, name: string): Promise<TimetableModel> {
-    return this.simpleCacheableQuery('plans', `${+timetableId}_${name}`, () => super.getPlan(timetableId, name));
-  }
-
-  getTimetableSummary(timetableId: number) {
-    return this.simpleCacheableQuery('descriptions', +timetableId, () => super.getTimetableSummary(timetableId));
-  }
-
-  private doWhenOnDbReady(callback: DatabaseCallback): Promise<any> {
-    if (this.isDbReady) {
-      return callback(this.database);
+    forceRefreshData(): Promise<any> {
+        return this.doWhenOnDbReady(async () => {
+            const status = await this.httpDownloader(['app-status.json']).toPromise() || {};
+            if (!status.timetables)
+                status.timetables = [];
+            if (status.lastModified !== (localStorage.getItem('app-status-last-modification') || 0)) {
+                localStorage.setItem('app-status-last-modification', `${status.lastModified}`);
+                localStorage.setItem('app-status', JSON.stringify(status));
+                this.currentAppStatus = status;
+            }
+        });
     }
 
-    return new Promise((resolve, reject) => {
-      this.toDoOnReady.push((db: IDBDatabase) => {
-        callback(db)
-          .then(v => resolve(v))
-          .catch(e => reject(e));
-      });
-    });
-  }
+    getAvailableTimetablesList(): Promise<TimetableInfo[]> {
+        return this.doWhenOnDbReady(async () => {
+            return this.currentAppStatus.timetables;
+        });
+    }
 
-  private simpleCacheableQuery(tableName: string,
-                               entryId: string | number,
-                               networkGetter: PromiseProducer)
-    : Promise<any> {
-    return this.doWhenOnDbReady(db => new Promise((done, err) => {
-      if (!db) return networkGetter().then(done, err).catch(err);
+    getCurrentTimetableId(): Promise<number> {
+        return this.doWhenOnDbReady(async () => {
+            const now = Date.now();
+            let latestThatIsBeforeNow = null;
+            for (const t of this.currentAppStatus.timetables) {
+                if (t.isValidFrom < now) {
+                    if (!latestThatIsBeforeNow || latestThatIsBeforeNow.isValidFrom < t.isValidFrom) {
+                        latestThatIsBeforeNow = t;
+                    }
+                }
+            }
+            if (latestThatIsBeforeNow)
+                return latestThatIsBeforeNow.id;
+            else if (this.currentAppStatus.timetables.length)
+                return this.currentAppStatus.timetables[0].id;
+            else
+                return 0;
+        });
+    }
 
-      const req = db
-        .transaction(tableName, 'readonly')
-        .objectStore(tableName)
-        .get(entryId);
+    getPlan(timetableId: number, name: string): Promise<TimetableModel> {
+        console.log(timetableId, name);
+        return this.simpleCacheableQuery('plans', `${+timetableId}_${name}`,
+            () => this.httpDownloader(['timetables', `${timetableId}`, name + '.json']).toPromise());
+    }
 
-      req.transaction.oncomplete = () => {
-        if (req.result) {
-          done(req.result);
-        } else {
-          // entity not found :/
-          networkGetter()
-            .then(result => {
-              const tx = db.transaction(tableName, 'readwrite');
-              tx.onerror = e => err(e);
-              const store = tx.objectStore(tableName);
-              store.put(result, entryId);
+    getTimetableSummary(timetableId: number) {
+        return this.simpleCacheableQuery('descriptions', `${+timetableId}`,
+            () => this.httpDownloader(['timetables', `${timetableId}`, 'summary.json']).toPromise());
+    }
 
-              done(result);
-            })
-            .catch(e => err(e));
+    private doWhenOnDbReady(callback: DatabaseCallback): Promise<any> {
+        if (this.isDbReady) {
+            return callback(this.database);
         }
-      };
-      req.transaction.onerror = e => err(e);
-    }));
-  }
 
+        return new Promise((resolve, reject) => {
+            this.toDoOnReady.push((db: IDBDatabase) => {
+                callback(db)
+                    .then(v => resolve(v))
+                    .catch(e => reject(e));
+            });
+        });
+    }
 
+    private simpleCacheableQuery(tableName: string,
+                                 entryId: string | number,
+                                 networkGetter: PromiseProducer)
+        : Promise<any> {
+        return this.doWhenOnDbReady(db => new Promise((done, err) => {
+            if (!db) return networkGetter().then(done, err).catch(err);
+
+            const req = db
+                .transaction(tableName, 'readonly')
+                .objectStore(tableName)
+                .get(entryId);
+
+            req.transaction.oncomplete = () => {
+                if (req.result) {
+                    done(req.result);
+                } else {
+                    // entity not found :/
+                    networkGetter()
+                        .then(result => {
+                            const tx = db.transaction(tableName, 'readwrite');
+                            tx.onerror = e => err(e);
+                            const store = tx.objectStore(tableName);
+                            store.put(result, entryId);
+
+                            done(result);
+                        })
+                        .catch(e => err(e));
+                }
+            };
+            req.transaction.onerror = e => err(e);
+        }));
+    }
 }
+
+//
+// abstract class NoCacheStore implements TimetableStore {
+//   constructor(protected httpDownloader: DownloadFunction) {
+//   }
+//
+//   getAvailableTimetablesList(): Promise<TimetableInfo[]> {
+//     return this.httpGet2Promise(['timetable', 'list']);
+//   }
+//
+//   getTimetableSummary(timetableId: number): Promise<any> {
+//     return this.httpGet2Promise(['timetable', (+timetableId).toString(), 'list']);
+//   }
+//
+//   getPlan(timetableId: number, name: string): Promise<TimetableModel> {
+//     return this.httpGet2Promise(['timetable', (+timetableId).toString(), 'get', name]);
+//   }
+//
+//   async getCurrentTimetableId(): Promise<number> {
+//     const id = AppService.selectedTimetableId;
+//     return id || await this.getAutoTimetable();
+//   }
+//
+//   selectTimetable(id: number) {
+//     AppService.selectedTimetableId = id;
+//   }
+//
+//   private httpGet2Promise(url: string[]): Promise<any> {
+//     return new Promise((resolve, reject) => {
+//       this.httpDownloader(url)
+//         .subscribe(v => resolve(v), e => reject(e));
+//     });
+//   }
+//
+//   private async getAutoTimetable(): Promise<number> {
+//     const cacheCurrentIdUntil = new Date(AppService.cacheCurrentIdUntil);
+//     if (!cacheCurrentIdUntil || cacheCurrentIdUntil < new Date()) {
+//       try {
+//         const response = await this.httpGet2Promise(['timetable', 'status']);
+//
+//         AppService.cacheCurrentIdUntil = response.cacheCurrentUntil;
+//         AppService.nextTimetableChange = response.nextChange;
+//         AppService.currentTimetableId = response.currentTimetableId;
+//         AppService.useNewMap = !!response.useNewMap;
+//
+//       } catch (e) {
+//         // Unable to connect to server, then check if we have cache
+//         if (!AppService.currentTimetableId) {
+//           throw e;
+//         }
+//       }
+//     }
+//
+//     return +AppService.currentTimetableId;
+//   }
+// }
+

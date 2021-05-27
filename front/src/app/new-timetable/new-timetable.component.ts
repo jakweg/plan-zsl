@@ -29,7 +29,7 @@ export class NewTimetableComponent implements OnInit {
     e = e.target;
 
     const name = NewTimetableComponent.getInputValue(e, 'name');
-    const isValidFrom = NewTimetableComponent.getInputValue(e, 'isValidFrom');
+    const isValidFrom = new Date(NewTimetableComponent.getInputValue(e, 'isValidFrom')).getTime() || 0;
     const file = NewTimetableComponent.getInputValue(e, 'file', 'files')[0];
 
     let error;

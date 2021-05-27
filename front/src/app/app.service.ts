@@ -34,14 +34,6 @@ export class AppService {
     localStorage.setItem('selectedTimetableId', v.toString());
   }
 
-  public static get currentTimetableId(): string {
-    return (!!localStorage ? +localStorage.getItem('currentTimetableId') || 0 : 0).toString();
-  }
-
-  public static set currentTimetableId(v: string) {
-    localStorage.setItem('currentTimetableId', v);
-  }
-
   public static get shouldNotifyAboutTimetableChange(): boolean {
     const change = AppService.nextTimetableChange;
     const now = new Date().getTime();
@@ -65,7 +57,7 @@ export class AppService {
   }
 
   static get useNewMap(): boolean {
-    return !!localStorage && localStorage.getItem('newMap') === '1';
+    return false
   }
 
   static set useNewMap(v: boolean) {

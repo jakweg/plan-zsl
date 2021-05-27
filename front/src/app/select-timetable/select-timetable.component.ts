@@ -12,7 +12,7 @@ import {TimetableInfo} from '../model/timetable-info';
 export class SelectTimetableComponent implements OnInit {
 
   selectedByUser: number = AppService.selectedTimetableId;
-  currentNewest: number = +AppService.currentTimetableId;
+  currentNewest: number = 0 // +AppService.currentTimetableId; //TODO implement
   timetables: TimetableInfo[];
   error: any;
 

@@ -14,7 +14,8 @@ export class MainPageComponent implements OnInit, OnDestroy {
   showAdm;
   mapLink = AppService.mapLink;
   newPlanComing = AppService.shouldNotifyAboutTimetableChange;
-  isOtherThenCurrentSelected = AppService.selectedTimetableId !== 0 && AppService.selectedTimetableId !== +AppService.currentTimetableId;
+  // isOtherThenCurrentSelected = AppService.selectedTimetableId !== 0 && AppService.selectedTimetableId !== +AppService.currentTimetableId;
+  isOtherThenCurrentSelected = false; // TODO implement
   private pwaInstallSubscription;
 
   constructor(private app: AppService, private api: ApiService) {

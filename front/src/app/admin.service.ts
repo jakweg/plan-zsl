@@ -1,10 +1,8 @@
 import {Injectable} from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFireStorage } from '@angular/fire/storage';
-import { storage } from 'firebase';
 import {BehaviorSubject} from 'rxjs';
 import {ApiService} from './api.service';
-import { AppService } from './app.service';
 import { TimetableDatabase } from './timetable-parser/timetable-database';
 
 @Injectable({
@@ -53,10 +51,12 @@ export class AdminService {
           const timetableId = Date.now()/10_000 | 0
 
           await Promise.all(Object.keys(timetables).map((key) => this.storage
-              .ref(`timetables/${timetableId}/${key}.json`)
+              .ref(`timetables/${timetableId}/${key.toLowerCase()}.json`)
               .putString(JSON.stringify(timetables[key]))))
 
-          await this.storage.ref(`timetables/${timetableId}.json`).putString(JSON.stringify(timetables))
+          await this.storage.ref(`timetables/${timetableId}/database.json`).putString(JSON.stringify(timetables))
+          await this.storage.ref(`timetables/${timetableId}/summary.json`).putString(JSON.stringify(database.getShortsForEverything()))
+
           await this.refreshStatus()
           const appState = JSON.parse(JSON.stringify(this.appState.value))
           if (!appState.timetables)

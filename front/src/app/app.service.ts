@@ -26,6 +26,14 @@ export class AppService {
     window.addEventListener('offline', () => this.networkStatus.next(false));
   }
 
+  public static get currentTimetableId(): number | null | undefined {
+    return +localStorage.getItem('currentTimetableId');
+  }
+
+  public static set currentTimetableId(v: number | null | undefined) {
+    localStorage.setItem('currentTimetableId', v.toString());
+  }
+
   public static get selectedTimetableId(): number | null | undefined {
     return +localStorage.getItem('selectedTimetableId');
   }

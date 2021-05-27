@@ -45,7 +45,7 @@ export class ApiService {
   }
 
   pingCurrentIfNeeded() {
-    if (AppService.cacheCurrentIdUntil < new Date().getTime() && navigator.onLine)
+    if (AppService.cacheCurrentIdUntil < Date.now() && navigator.onLine)
       this.timetables.forceRefreshData().then();
   }
 

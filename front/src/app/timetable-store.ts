@@ -1,10 +1,13 @@
 import { Observable } from 'rxjs';
+import { AppService } from './app.service';
 import { TimetableModel } from './model/timetable';
 import { TimetableInfo } from './model/timetable-info';
 
 export type DownloadFunction = (url: string[]) => Observable<any>;
 type DatabaseCallback = (db: IDBDatabase) => Promise<any>;
 type PromiseProducer = () => Promise<any>;
+const CACHE_DURATION_MILLIS = 2 * 24 * 60 * 60 * 1000 // two days
+// const CACHE_DURATION_MILLIS = 60 * 1000; // one minute
 
 export interface TimetableStore {
     /** Forces refreshing information, even if it should be fresh, other methods may call this method as well */
@@ -75,6 +78,36 @@ export class IndexedDBStore implements TimetableStore {
                 localStorage.setItem('app-status-last-modification', `${status.lastModified}`);
                 localStorage.setItem('app-status', JSON.stringify(status));
                 this.currentAppStatus = status;
+                AppService.cacheCurrentIdUntil = Date.now() + CACHE_DURATION_MILLIS;
+
+
+                const now = Date.now();
+                let latestThatIsBeforeNow = null;
+                let next = null;
+                for (const t of this.currentAppStatus.timetables) {
+                    if (t.isValidFrom < now) {
+                        if (!latestThatIsBeforeNow || latestThatIsBeforeNow.isValidFrom < t.isValidFrom) {
+                            latestThatIsBeforeNow = t;
+                        }
+                    }
+
+                    if (t.isValidFrom > now && (!next || t.isValidFrom < next.isValidFrom)) {
+                        next = t;
+                    }
+                }
+
+                if (next && next.id !== latestThatIsBeforeNow.id) {
+                    AppService.nextTimetableChange = next.isValidFrom;
+                } else {
+                    AppService.nextTimetableChange = 0;
+                }
+
+                if (latestThatIsBeforeNow)
+                    AppService.currentTimetableId = latestThatIsBeforeNow.id;
+                else if (this.currentAppStatus.timetables.length)
+                    AppService.currentTimetableId = this.currentAppStatus.timetables[0].id;
+                else
+                    AppService.currentTimetableId = 0;
             }
         });
     }
@@ -87,26 +120,11 @@ export class IndexedDBStore implements TimetableStore {
 
     getCurrentTimetableId(): Promise<number> {
         return this.doWhenOnDbReady(async () => {
-            const now = Date.now();
-            let latestThatIsBeforeNow = null;
-            for (const t of this.currentAppStatus.timetables) {
-                if (t.isValidFrom < now) {
-                    if (!latestThatIsBeforeNow || latestThatIsBeforeNow.isValidFrom < t.isValidFrom) {
-                        latestThatIsBeforeNow = t;
-                    }
-                }
-            }
-            if (latestThatIsBeforeNow)
-                return latestThatIsBeforeNow.id;
-            else if (this.currentAppStatus.timetables.length)
-                return this.currentAppStatus.timetables[0].id;
-            else
-                return 0;
+            return AppService.currentTimetableId;
         });
     }
 
     getPlan(timetableId: number, name: string): Promise<TimetableModel> {
-        console.log(timetableId, name);
         return this.simpleCacheableQuery('plans', `${+timetableId}_${name}`,
             () => this.httpDownloader(['timetables', `${timetableId}`, name + '.json']).toPromise());
     }

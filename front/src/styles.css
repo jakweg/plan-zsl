@@ -85,11 +85,9 @@ main {
   text-align: center;
 }
 
-@media (max-width: 750px) {
   main {
     min-height: calc(100vh - 180px);
   }
-}
 
 
 a {

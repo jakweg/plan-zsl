@@ -202,7 +202,7 @@ class TimetableDatabase {
         return responseObject;
     }
     getTimetableByTeacherId(teacherId) {
-        var _a;
+        var _a, _b, _c;
         const teacher = this.teachers[teacherId];
         if (!teacher)
             throw new Error(`Teacher with id ${teacherId} not found!`);
@@ -232,13 +232,13 @@ class TimetableDatabase {
                     for (const group of lesson.groupIds
                         .map(it => this.groups[it])) {
                         foundLessons.push({
-                            class: this.classes[group.classId].short,
+                            class: group != null ? this.classes[group.classId].short : '',
                             subject: subject.short,
                             period: card.period,
                             classroom: (_a = classroom === null || classroom === void 0 ? void 0 : classroom.short) !== null && _a !== void 0 ? _a : '',
                             teacher: teacher.short,
-                            entireClass: group.entireClass,
-                            group: group.name,
+                            entireClass: (_b = group === null || group === void 0 ? void 0 : group.entireClass) !== null && _b !== void 0 ? _b : true,
+                            group: (_c = group) === null || _c === void 0 ? void 0 : _c.name,
                         });
                     }
                 }

@@ -37,16 +37,18 @@ const initTimetableRoutes = (app) => {
             return global_1.haltWithReason(res, 400, 'Invalid timetable id');
         if (id === 0) {
             id = config.currentTimetableId.value;
+            // @ts-ignore
             req.query.selectedCurrent = true;
         }
         if (!config.timetableExists(id))
             return global_1.haltWithReason(res, 404, 'Timetable with this id not found');
+        // @ts-ignore
         req.query.timetableId = id;
         req.next('route');
     });
     app.use('/timetable/:timetableId', timetableRoute);
     timetableRoute.get('/list', (req, res) => {
-        const path = config.getTimetablePathById(req.query.timetableId);
+        const path = config.getTimetablePathById(+req.query.timetableId);
         fs_1.readFile(path + '/summary.json', { encoding: 'utf8' }, (err, data) => {
             if (err)
                 return global_1.haltWithReason(res, 500, 'unable to read file');
@@ -58,7 +60,7 @@ const initTimetableRoutes = (app) => {
         });
     });
     timetableRoute.get('/get/:short', (req, res) => {
-        const path = config.getTimetablePathById(req.query.timetableId);
+        const path = config.getTimetablePathById(+req.query.timetableId);
         const short = req.params.short.trim().toLowerCase();
         if (short.includes('..'))
             return global_1.haltWithReason(res, 404, 'Plan not found');

@@ -160,7 +160,7 @@ const initAdminRoutes = (app) => {
     });
     adminRoute.post('/new-timetable', VERIFIED_USER_FILTER, (req, res) => {
         const form = new formidable_1.IncomingForm();
-        form.maxFileSize = 50 * 1024 * 1024;
+        // form.maxFileSize = 50 * 1024 * 1024
         form.parse(req, (err, fields, files) => {
             if (err)
                 return global_1.haltWithReason(res, 400, err.message);

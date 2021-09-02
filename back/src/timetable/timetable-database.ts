@@ -279,13 +279,13 @@ export class TimetableDatabase {
 						.map(it => this.groups[it])) {
 
 						foundLessons.push({
-							class: this.classes[(group as Group).classId].short,
+							class: group != null ? this.classes[(group as Group).classId].short : '',
 							subject: subject.short,
 							period: card.period,
 							classroom: classroom?.short ?? '',
 							teacher: teacher.short,
-							entireClass: group.entireClass,
-							group: (group as Group).name,
+							entireClass: group?.entireClass ?? true,
+							group: (group as Group)?.name,
 						})
 					}
 				}

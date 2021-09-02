@@ -1,5 +1,5 @@
 import express, { Express } from 'express'
-import { IncomingForm } from 'formidable'
+import { File, IncomingForm } from 'formidable'
 import { readFile } from 'fs'
 import { TextDecoder } from 'text-encoding'
 import { parseString as parseXmlString } from 'xml2js'
@@ -192,7 +192,7 @@ export const initAdminRoutes = (app: Express) => {
 
 	adminRoute.post('/new-timetable', VERIFIED_USER_FILTER, (req, res) => {
 		const form = new IncomingForm()
-		form.maxFileSize = 50 * 1024 * 1024
+		// form.maxFileSize = 50 * 1024 * 1024
 
 		form.parse(req, (err, fields, files) => {
 			if (err)
@@ -207,7 +207,7 @@ export const initAdminRoutes = (app: Express) => {
 			if (!activeSinceTimestamp)
 				return haltWithReason(res, 400, 'Invalid date')
 
-			const file = files.file
+			const file = files.file as File
 			if (!file)
 				return haltWithReason(res, 406, 'File not given')
 

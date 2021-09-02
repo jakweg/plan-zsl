@@ -83,10 +83,7 @@ try {
 	}
 
 
-	app.listen(port, '0.0.0.0', err => {
-		if (err) {
-			return console.error(err)
-		}
+	app.listen(port, '0.0.0.0', () => {
 		return console.log(`server is listening on ${port}`)
 	})
 

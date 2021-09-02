@@ -43,12 +43,14 @@ export const initTimetableRoutes = (app: Express) => {
 
 		if (id === 0) {
 			id = config.currentTimetableId.value
+			// @ts-ignore
 			req.query.selectedCurrent = true
 		}
 
 		if (!config.timetableExists(id))
 			return haltWithReason(res, 404, 'Timetable with this id not found')
 
+		// @ts-ignore
 		req.query.timetableId = id
 
 		req.next('route')
@@ -57,7 +59,7 @@ export const initTimetableRoutes = (app: Express) => {
 
 
 	timetableRoute.get('/list', (req, res) => {
-		const path = config.getTimetablePathById(req.query.timetableId)
+		const path = config.getTimetablePathById(+req.query.timetableId)
 		readFile(path + '/summary.json', {encoding: 'utf8'}, (err, data) => {
 			if (err)
 				return haltWithReason(res, 500, 'unable to read file')
@@ -71,7 +73,7 @@ export const initTimetableRoutes = (app: Express) => {
 	})
 
 	timetableRoute.get('/get/:short', (req, res) => {
-		const path = config.getTimetablePathById(req.query.timetableId)
+		const path = config.getTimetablePathById(+req.query.timetableId)
 		const short = req.params.short.trim().toLowerCase()
 		if (short.includes('..')) return haltWithReason(res, 404, 'Plan not found')
 		readFile(path + '/plans/' + short, {encoding: 'utf8'}, (err, data) => {

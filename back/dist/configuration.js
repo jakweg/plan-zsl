@@ -30,6 +30,9 @@ function deleteFolderRecursive(path) {
     }
 }
 exports.deleteFolderRecursive = deleteFolderRecursive;
+function generateNewTimetableId() {
+    return Date.now() % ((Math.random() * 1000000000) | 0) | 0;
+}
 class Configuration {
     constructor() {
         this.prefs = new preference_manager_1.PreferenceManager();
@@ -51,11 +54,8 @@ class Configuration {
             .registerIn(this.prefs);
         this.timetablesPath = new preference_1.Preference('timetablesPath', './timetables', 'read-only', false)
             .registerIn(this.prefs);
-        this.nextTimetableId = new preference_1.Preference('nextTimetableId', 1, 'read-write', false)
-            .registerIn(this.prefs);
         this.timetablesMap = new Map();
         this.nextTimetableChangeTime = null;
-        this.nextTimetableId.validator = (v) => ((v | 0) === v);
         this.prefs.fromJSON(JSON.parse(fs_1.readFileSync(Configuration.CONFIG_PATH, { encoding: 'utf8' })));
         this.prefs.changedListener = () => {
             fs_1.writeFileSync(Configuration.CONFIG_PATH, JSON.stringify(this.prefs.toJSON(), null, 2), { encoding: 'utf8' });
@@ -71,7 +71,6 @@ class Configuration {
             for (const t of conf.timetables) {
                 this.timetablesMap.set(t.id, new TimetableInfo(t.id, t.name, t.isValidFrom));
             }
-            this.nextTimetableId.value = +conf.nextTimetableId || 1;
         }
         if (!this.autoTimetableRotation.value && this.currentTimetableId.value === 0) {
             console.warn('No current timetable selected, specify it in config file or enable auto timetable rotation');
@@ -118,11 +117,10 @@ class Configuration {
     saveTimetablesConfig() {
         fs_1.writeFileSync(`${this.timetablesPath}/.config.json`, JSON.stringify({
             timetables: Array.from(this.timetablesMap.values()),
-            nextTimetableId: this.nextTimetableId.value,
         }), { encoding: 'utf8' });
     }
     registerNewTimetable(name, activateSince) {
-        const info = new TimetableInfo(+this.nextTimetableId.value++, name, activateSince);
+        const info = new TimetableInfo(generateNewTimetableId(), name, activateSince);
         this.timetablesMap.set(+info.id, info);
         return info;
     }

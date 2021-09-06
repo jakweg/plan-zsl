@@ -16,7 +16,7 @@ export function deleteFolderRecursive(path: string) {
 	let files = []
 	if (existsSync(path)) {
 		files = readdirSync(path)
-		files.forEach(function (file, index) {
+		files.forEach(function (file) {
 			let curPath = path + '/' + file
 			if (lstatSync(curPath).isDirectory()) { // recurse
 				deleteFolderRecursive(curPath)
@@ -26,6 +26,10 @@ export function deleteFolderRecursive(path: string) {
 		})
 		rmdirSync(path)
 	}
+}
+
+function generateNewTimetableId() {
+	return Date.now() % ((Math.random() * 1_000_000_000) | 0) | 0
 }
 
 export class Configuration {
@@ -59,15 +63,10 @@ export class Configuration {
 	private readonly timetablesPath = new Preference<string>(
 		'timetablesPath', './timetables', 'read-only', false)
 		.registerIn(this.prefs)
-	private readonly nextTimetableId = new Preference<number>(
-		'nextTimetableId', 1, 'read-write', false)
-		.registerIn(this.prefs)
 	private readonly timetablesMap = new Map<number, TimetableInfo>()
 	private nextTimetableChangeTime: number = null
 
 	private constructor() {
-		this.nextTimetableId.validator = (v) => ((v | 0) === v)
-
 		this.prefs.fromJSON(JSON.parse(readFileSync(Configuration.CONFIG_PATH, {encoding: 'utf8'})))
 
 		this.prefs.changedListener = () => {
@@ -94,8 +93,6 @@ export class Configuration {
 						t.name,
 						t.isValidFrom))
 			}
-
-			this.nextTimetableId.value = +conf.nextTimetableId || 1
 		}
 
 
@@ -150,13 +147,12 @@ export class Configuration {
 		writeFileSync(`${this.timetablesPath}/.config.json`, JSON.stringify(
 			{
 				timetables: Array.from(this.timetablesMap.values()),
-				nextTimetableId: this.nextTimetableId.value,
 			},
 		), {encoding: 'utf8'})
 	}
 
 	registerNewTimetable(name: string, activateSince: number): TimetableInfo {
-		const info = new TimetableInfo(+this.nextTimetableId.value++, name, activateSince)
+		const info = new TimetableInfo(generateNewTimetableId(), name, activateSince)
 		this.timetablesMap.set(+info.id, info)
 		return info
 	}

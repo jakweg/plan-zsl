@@ -26,11 +26,14 @@ const express_1 = __importStar(require("express"));
 const express_session_1 = __importDefault(require("express-session"));
 const configuration_1 = require("./configuration");
 const admin_1 = require("./routes/admin");
+const ip_whitelist_1 = require("./routes/ip-whitelist");
 const timetable_1 = require("./routes/timetable");
 try {
     const config = configuration_1.Configuration.get();
     const port = +process.env.PORT || 8080;
     const app = express_1.default();
+    app.set('trust proxy', true);
+    app.use(ip_whitelist_1.ipWhitelistMiddleware);
     app.use(express_session_1.default({
         name: 'sid',
         secret: Array.from(new Array(16), () => (Math.random() * Math.pow(2, 31) | 0).toString(16)).join(''),

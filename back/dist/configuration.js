@@ -17,7 +17,7 @@ function deleteFolderRecursive(path) {
     let files = [];
     if (fs_1.existsSync(path)) {
         files = fs_1.readdirSync(path);
-        files.forEach(function (file, index) {
+        files.forEach(function (file) {
             let curPath = path + '/' + file;
             if (fs_1.lstatSync(curPath).isDirectory()) { // recurse
                 deleteFolderRecursive(curPath);
@@ -51,6 +51,10 @@ class Configuration {
         this.adminPassword = new preference_1.Preference('adminPassword', null, 'read-write', true)
             .registerIn(this.prefs);
         this.serveFrontendFrom = new preference_1.Preference('serveFrontFrom', '', 'read-write', true)
+            .registerIn(this.prefs);
+        this.enableIpWhitelist = new preference_1.Preference('enableIpWhitelist', false, 'read-write', false)
+            .registerIn(this.prefs);
+        this.whitelistedIps = new preference_1.Preference('whitelistedIps', [], 'read-write', false)
             .registerIn(this.prefs);
         this.timetablesPath = new preference_1.Preference('timetablesPath', './timetables', 'read-only', false)
             .registerIn(this.prefs);

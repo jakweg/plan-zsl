@@ -2,6 +2,7 @@ import express, { static as expressStatic } from 'express'
 import session from 'express-session'
 import { Configuration } from './configuration'
 import { initAdminRoutes } from './routes/admin'
+import { ipWhitelistMiddleware } from './routes/ip-whitelist'
 import { initTimetableRoutes } from './routes/timetable'
 
 try {
@@ -9,6 +10,9 @@ try {
 
 	const port = +process.env.PORT || 8080
 	const app = express()
+
+	app.set('trust proxy', true)
+	app.use(ipWhitelistMiddleware)
 
 	app.use(session({
 		name: 'sid',

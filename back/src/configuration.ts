@@ -60,6 +60,12 @@ export class Configuration {
 	public readonly serveFrontendFrom = new Preference<string>(
 		'serveFrontFrom', '', 'read-write', true)
 		.registerIn(this.prefs)
+	public readonly enableIpWhitelist = new Preference<boolean>(
+		'enableIpWhitelist', false, 'read-write', false)
+		.registerIn(this.prefs)
+	public readonly whitelistedIps = new Preference<string[]>(
+		'whitelistedIps', [], 'read-write', false)
+		.registerIn(this.prefs)
 	private readonly timetablesPath = new Preference<string>(
 		'timetablesPath', './timetables', 'read-only', false)
 		.registerIn(this.prefs)

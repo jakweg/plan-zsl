@@ -4,7 +4,7 @@ export type PreferenceMode = 'read-write' | 'write-only' | 'read-only'
 
 export type PreferenceKey = string
 
-export type PreferenceType = string | number | boolean
+export type PreferenceType = string | number | boolean | string[]
 
 export type PreferenceValidator<T> = (newValue: T) => boolean
 

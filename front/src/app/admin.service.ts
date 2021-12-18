@@ -87,7 +87,7 @@ export class AdminService {
 
   setServerSetting(token: string, name: SERVER_SETTING, value: any): Promise<any> {
     return this.post(['set-server-setting'],
-      {token, key: name, value: value.toString()});
+      {token, key: name, value});
   }
 
   getTimetables(): Promise<any[]> {

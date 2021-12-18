@@ -12,7 +12,6 @@ try {
 	const app = express()
 
 	app.set('trust proxy', true)
-	app.use(ipWhitelistMiddleware)
 
 	app.use(session({
 		name: 'sid',
@@ -42,6 +41,7 @@ try {
 		})
 	}
 
+	app.use(ipWhitelistMiddleware)
 
 	if (config.serveFrontendFrom.value) {
 		console.info('Serving content from ' + config.serveFrontendFrom.value)

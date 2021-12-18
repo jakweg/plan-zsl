@@ -33,7 +33,6 @@ try {
     const port = +process.env.PORT || 8080;
     const app = express_1.default();
     app.set('trust proxy', true);
-    app.use(ip_whitelist_1.ipWhitelistMiddleware);
     app.use(express_session_1.default({
         name: 'sid',
         secret: Array.from(new Array(16), () => (Math.random() * Math.pow(2, 31) | 0).toString(16)).join(''),
@@ -59,6 +58,7 @@ try {
             res.status(200).end();
         });
     }
+    app.use(ip_whitelist_1.ipWhitelistMiddleware);
     if (config.serveFrontendFrom.value) {
         console.info('Serving content from ' + config.serveFrontendFrom.value);
         console.info('Registering API at path /api ');

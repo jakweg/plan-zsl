@@ -1,4 +1,5 @@
 import { Configuration } from '../configuration'
+import {readFile} from 'fs'
 
 function getNetworkPartOfIp(ip: string, networkPrefix: number) {
 	return ip
@@ -32,8 +33,13 @@ const isThisIpPermitted = (ip: string): boolean => {
 function serveBlacklistedPage(res) {
 	const config = Configuration.get()
 
-	res.sendFile(config.serveFrontendFrom.value + '/assets/non-whitelisted-ip.html', {root: '.'}, (err) => {
-		if (err) res.end('no access')
+	readFile(config.serveFrontendFrom.value + '/assets/non-whitelisted-ip.html', (err, data) => {
+		if (err) res.sendStatus(401)
+		else {
+			res.status(401)
+			res.contentType('text/html')
+			res.end(data)
+		}
 	})
 }
 

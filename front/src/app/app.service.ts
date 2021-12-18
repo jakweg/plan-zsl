@@ -64,16 +64,8 @@ export class AppService {
     localStorage.setItem('cacheUntil', (v || 0).toString());
   }
 
-  static get useNewMap(): boolean {
-    return !!localStorage && localStorage.getItem('newMap') === '1';
-  }
-
-  static set useNewMap(v: boolean) {
-    localStorage.setItem('newMap', v ? '1' : '0');
-  }
-
   static get mapLink(): string {
-    return this.useNewMap ? 'https://mapa.zsll.ga' : 'http://mapa.tl.krakow.pl';
+    return 'https://mapa.tl.krakow.pl';
   }
 
   static get showBookmarkTip(): boolean {

@@ -33,7 +33,7 @@ export const initAdminRoutes = (app: Express) => {
 				res.sendStatus(204)
 			} else {
 				if ((<any>req).session)
-				(<any>req).session.destroy(() => {
+					(<any>req).session.destroy(() => {
 					})
 				res.sendStatus(401)
 			}
@@ -85,7 +85,8 @@ export const initAdminRoutes = (app: Express) => {
 				currentId: current ? current.id : null,
 				rotationEnabled: config.autoTimetableRotation.value,
 				timetableCacheDuration: config.currentTimetableCacheSeconds.value,
-				useNewMap: config.useNewMap.value,
+				useIpFilter: config.enableIpWhitelist.value,
+				whitelistedIps: config.whitelistedIps.value
 			})
 	})
 
@@ -96,19 +97,6 @@ export const initAdminRoutes = (app: Express) => {
 			return haltWithReason(res, 400, 'Invalid setting')
 
 		switch (key) {
-			case 'use-new-map':
-				switch (value) {
-					case '1':
-						config.useNewMap.value = true
-						break
-					case '0':
-						config.useNewMap.value = false
-						break
-					default:
-						return haltWithReason(res, 400, 'Invalid value')
-				}
-				break
-
 			case 'auto-rotation':
 				switch (value) {
 					case '1':
@@ -120,6 +108,30 @@ export const initAdminRoutes = (app: Express) => {
 					default:
 						return haltWithReason(res, 400, 'Invalid value')
 				}
+				break
+
+			case 'use-ip-filter':
+				switch (value) {
+					case '1':
+						config.enableIpWhitelist.value = true
+						break
+					case '0':
+						config.enableIpWhitelist.value = false
+						break
+					default:
+						return haltWithReason(res, 400, 'Invalid value')
+				}
+				break
+
+			case 'whitelisted-ips':
+				// we don't check validity of sent ip networks
+				//  just basics so we don't crash backend...
+				// we trust admin page
+				const isValid = Array.isArray(value) && (value as any[]).every(e => typeof e === 'string' && e.length > 0)
+				if (isValid)
+					config.whitelistedIps.value = value
+				else
+					return haltWithReason(res, 400, 'Invalid value')
 				break
 
 			case 'timetable-info-cache-duration':
@@ -176,6 +188,11 @@ export const initAdminRoutes = (app: Express) => {
 		config.currentTimetableId.value = id
 
 		res.sendStatus(204)
+	})
+
+	adminRoute.get('/my-ip', VERIFIED_USER_FILTER, (req, res) => {
+		const ips = [req.ip, ...req.ips]
+		res.send(ips)
 	})
 
 	adminRoute.post('/delete-timetable/:id', VERIFIED_USER_AND_CSRF_FILTER, (req, res) => {

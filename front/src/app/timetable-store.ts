@@ -60,7 +60,6 @@ export class NoCacheStore implements TimetableStore {
         AppService.cacheCurrentIdUntil = response.cacheCurrentUntil;
         AppService.nextTimetableChange = response.nextChange;
         AppService.currentTimetableId = response.currentTimetableId;
-        AppService.useNewMap = !!response.useNewMap;
 
       } catch (e) {
         // Unable to connect to server, then check if we have cache

@@ -2,6 +2,7 @@ import express, { static as expressStatic } from 'express'
 import session from 'express-session'
 import { Configuration } from './configuration'
 import { initAdminRoutes } from './routes/admin'
+import { ipWhitelistMiddleware } from './routes/ip-whitelist'
 import { initTimetableRoutes } from './routes/timetable'
 
 try {
@@ -9,6 +10,8 @@ try {
 
 	const port = +process.env.PORT || 8080
 	const app = express()
+
+	app.set('trust proxy', true)
 
 	app.use(session({
 		name: 'sid',
@@ -28,7 +31,6 @@ try {
 		app.use((req, res, next) => {
 			res.set('Access-Control-Allow-Origin', req.header('origin') || 'http://localhost:4200')
 			res.set('Access-Control-Allow-Credentials', 'true')
-
 			next('route')
 		})
 		app.options('/*', (req, res) => {
@@ -39,6 +41,7 @@ try {
 		})
 	}
 
+	app.use(ipWhitelistMiddleware)
 
 	if (config.serveFrontendFrom.value) {
 		console.info('Serving content from ' + config.serveFrontendFrom.value)

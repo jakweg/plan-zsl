@@ -2,20 +2,6 @@
 
 <div *ngIf="!error">
   <div class="form">
-    <h1>Używaj nieoficjalnej mapy szkoły</h1>
-    <p>
-      Wszystkie odnośniki do mapy szkoły będą kierowały na <a href="https://mapa.zsll.ga">adres deweloperski mapy</a> jeżeli ta opcja jest włączona.
-      W przeciwnym wypadku linki będą kierowane do <a href="http://mapa.tl.krakow.pl">istniejącej mapy szkoły</a>.
-    </p>
-    <div class="boolean-switch">
-      <a [class.active]="currentSettings && currentSettings.useNewMap"
-         (click)="setProperty('use-new-map', '1')">Włączone</a>
-      <a [class.active]="currentSettings && !currentSettings.useNewMap"
-         (click)="setProperty('use-new-map', '0')">Wyłączone</a>
-    </div>
-  </div>
-
-  <div class="form">
     <h1>Automatyczny wybór planu lekcji</h1>
     <p>
       Jeżeli ta opcja jest włączona to serwer automatycznie wybierze najnowszy plan lekcji i taki będzie dostępny dla
@@ -46,4 +32,36 @@
     </label>
   </div>
 
+  <div class="form">
+    <h1>Filtrowanie ruchu po adresach IP</h1>
+    <p>Włącznie tej opcji spowoduje zablokowanie ruchu z innych adresów niż podane poniżej w liście<br/>
+      <b>Uwaga:</b> Należy najpierw wypełnić poniższą listę przed aktywacją tej opcji, w przeciwnym razie utraci się dostęp do serwera!</p>
+    <div class="boolean-switch">
+      <a [class.active]="currentSettings && currentSettings.useIpFilter"
+         (click)="setProperty('use-ip-filter', '1')">Włączone</a>
+      <a [class.active]="currentSettings && !currentSettings.useIpFilter"
+         (click)="setProperty('use-ip-filter', '0')">Wyłączone</a>
+    </div>
+  </div>
+
+  <div class="form">
+    <h1>Biała lista adresów</h1>
+    <p>
+      Lista adresów sieci z których można połączyć się z tą stroną.<br/>
+      Adresy muszą być w formacie IPv4 z długością prefixu sieci po ukośniku oraz jeden na linię.<br>
+      Aby zezwolić na dostęp tylko z jednego konkretnego adresu należy użyć długości prefixu sieci 32.<br>
+      Przykłady:<br>
+      <code>
+        10.8.0.0/16<br/>
+        192.168.1.10/32<br/>
+      </code>
+      <a *ngIf="linesAreModified" class="nice-btn" (click)="validateAndSendIpLines()">Zapisz zmiany</a>
+    </p>
+    <textarea rows="20" [(ngModel)]="ipFilterLines" (input)="linesAreModified=true"></textarea>
+  </div>
+
+  <div *ngIf="ipAddresses && ipAddresses.length > 0">
+    <p>Twoje połączenie nawiązano używając tych adresów:</p>
+    <p *ngFor="let ip of ipAddresses">{{ip}}</p>
+  </div>
 </div>

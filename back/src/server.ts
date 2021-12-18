@@ -32,7 +32,6 @@ try {
 		app.use((req, res, next) => {
 			res.set('Access-Control-Allow-Origin', req.header('origin') || 'http://localhost:4200')
 			res.set('Access-Control-Allow-Credentials', 'true')
-
 			next('route')
 		})
 		app.options('/*', (req, res) => {

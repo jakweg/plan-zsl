@@ -39,11 +39,15 @@ function serveBlacklistedPage(res) {
 
 export const ipWhitelistMiddleware = (req, res, next) => {
 	const config = Configuration.get()
-	if (config.enableIpWhitelist.value) {
-		let ips: string | string[] = req.query.ip || req.ips
+	let isForceAllowed = req.headers?.cookie?.includes('ip') === true
+	if (req.query.ip != undefined) {
+		res.cookie('ip', req.ips?.toString() ?? 'unknown', {maxAge: 99999999, httpOnly: true})
+		res.redirect(307, req.path)
+		return
+	}
 
-		if (typeof ips === 'string')
-			ips = [ips]
+	if (!isForceAllowed && config.enableIpWhitelist.value) {
+		let ips: string[] = req.ips
 
 		if (!ips.some(isThisIpPermitted)) {
 			serveBlacklistedPage(res)

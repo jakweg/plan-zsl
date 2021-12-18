@@ -72,6 +72,8 @@ const initAdminRoutes = (app) => {
             currentId: current ? current.id : null,
             rotationEnabled: config.autoTimetableRotation.value,
             timetableCacheDuration: config.currentTimetableCacheSeconds.value,
+            useIpFilter: config.enableIpWhitelist.value,
+            whitelistedIps: config.whitelistedIps.value
         });
     });
     adminRoute.post('/set-server-setting', VERIFIED_USER_AND_CSRF_FILTER, (req, res) => {
@@ -91,6 +93,28 @@ const initAdminRoutes = (app) => {
                     default:
                         return global_1.haltWithReason(res, 400, 'Invalid value');
                 }
+                break;
+            case 'use-ip-filter':
+                switch (value) {
+                    case '1':
+                        config.enableIpWhitelist.value = true;
+                        break;
+                    case '0':
+                        config.enableIpWhitelist.value = false;
+                        break;
+                    default:
+                        return global_1.haltWithReason(res, 400, 'Invalid value');
+                }
+                break;
+            case 'whitelisted-ips':
+                // we don't check validity of sent ip networks
+                //  just basics so we don't crash backend...
+                // we trust admin page
+                const isValid = Array.isArray(value) && value.every(e => typeof e === 'string' && e.length > 0);
+                if (isValid)
+                    config.whitelistedIps.value = value;
+                else
+                    return global_1.haltWithReason(res, 400, 'Invalid value');
                 break;
             case 'timetable-info-cache-duration':
                 if (isNaN(+value) || +value < 0)

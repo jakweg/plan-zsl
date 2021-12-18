@@ -44,8 +44,6 @@ class Configuration {
             .registerIn(this.prefs);
         this.currentTimetableCacheSeconds = new preference_1.Preference('currentTimetableCacheSeconds', 5 * 1000, 'read-write', false)
             .registerIn(this.prefs);
-        this.useNewMap = new preference_1.Preference('useNewMap', false, 'read-write', false)
-            .registerIn(this.prefs);
         this.adminLogin = new preference_1.Preference('adminLogin', null, 'read-write', true)
             .registerIn(this.prefs);
         this.adminPassword = new preference_1.Preference('adminPassword', null, 'read-write', true)

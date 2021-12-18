@@ -48,9 +48,6 @@ export class Configuration {
 	public readonly currentTimetableCacheSeconds = new Preference<number>(
 		'currentTimetableCacheSeconds', 5 * 1000, 'read-write', false)
 		.registerIn(this.prefs)
-	public readonly useNewMap = new Preference<boolean>(
-		'useNewMap', false, 'read-write', false)
-		.registerIn(this.prefs)
 	public readonly adminLogin = new Preference<string>(
 		'adminLogin', null, 'read-write', true)
 		.registerIn(this.prefs)

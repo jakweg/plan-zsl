@@ -72,7 +72,6 @@ const initAdminRoutes = (app) => {
             currentId: current ? current.id : null,
             rotationEnabled: config.autoTimetableRotation.value,
             timetableCacheDuration: config.currentTimetableCacheSeconds.value,
-            useNewMap: config.useNewMap.value,
         });
     });
     adminRoute.post('/set-server-setting', VERIFIED_USER_AND_CSRF_FILTER, (req, res) => {
@@ -81,18 +80,6 @@ const initAdminRoutes = (app) => {
         if (!key || !value)
             return global_1.haltWithReason(res, 400, 'Invalid setting');
         switch (key) {
-            case 'use-new-map':
-                switch (value) {
-                    case '1':
-                        config.useNewMap.value = true;
-                        break;
-                    case '0':
-                        config.useNewMap.value = false;
-                        break;
-                    default:
-                        return global_1.haltWithReason(res, 400, 'Invalid value');
-                }
-                break;
             case 'auto-rotation':
                 switch (value) {
                     case '1':

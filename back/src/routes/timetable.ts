@@ -28,7 +28,6 @@ export const initTimetableRoutes = (app: Express) => {
 			currentTimetableId: config.currentTimetableId.value,
 			nextChange: config.nextTimetableChange,
 			cacheCurrentUntil: config.cacheCurrentTimetableUntil,
-			useNewMap: config.useNewMap.value
 		})
 	})
 

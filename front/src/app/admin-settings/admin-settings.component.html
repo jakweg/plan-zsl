@@ -2,20 +2,6 @@
 
 <div *ngIf="!error">
   <div class="form">
-    <h1>Używaj nieoficjalnej mapy szkoły</h1>
-    <p>
-      Wszystkie odnośniki do mapy szkoły będą kierowały na <a href="https://mapa.zsll.ga">adres deweloperski mapy</a> jeżeli ta opcja jest włączona.
-      W przeciwnym wypadku linki będą kierowane do <a href="http://mapa.tl.krakow.pl">istniejącej mapy szkoły</a>.
-    </p>
-    <div class="boolean-switch">
-      <a [class.active]="currentSettings && currentSettings.useNewMap"
-         (click)="setProperty('use-new-map', '1')">Włączone</a>
-      <a [class.active]="currentSettings && !currentSettings.useNewMap"
-         (click)="setProperty('use-new-map', '0')">Wyłączone</a>
-    </div>
-  </div>
-
-  <div class="form">
     <h1>Automatyczny wybór planu lekcji</h1>
     <p>
       Jeżeli ta opcja jest włączona to serwer automatycznie wybierze najnowszy plan lekcji i taki będzie dostępny dla

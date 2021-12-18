@@ -190,6 +190,11 @@ export const initAdminRoutes = (app: Express) => {
 		res.sendStatus(204)
 	})
 
+	adminRoute.get('/my-ip', VERIFIED_USER_FILTER, (req, res) => {
+		const ips = [req.ip, ...req.ips]
+		res.send(ips)
+	})
+
 	adminRoute.post('/delete-timetable/:id', VERIFIED_USER_AND_CSRF_FILTER, (req, res) => {
 		const id = +req.params.id
 

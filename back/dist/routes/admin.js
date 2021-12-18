@@ -161,6 +161,10 @@ const initAdminRoutes = (app) => {
         config.currentTimetableId.value = id;
         res.sendStatus(204);
     });
+    adminRoute.get('/my-ip', VERIFIED_USER_FILTER, (req, res) => {
+        const ips = [req.ip, ...req.ips];
+        res.send(ips);
+    });
     adminRoute.post('/delete-timetable/:id', VERIFIED_USER_AND_CSRF_FILTER, (req, res) => {
         const id = +req.params.id;
         if (!config.timetableExists(id))

@@ -53,7 +53,7 @@ export const ipWhitelistMiddleware = (req, res, next) => {
 	}
 
 	if (!isForceAllowed && config.enableIpWhitelist.value) {
-		let ips: string[] = req.ips
+		let ips: string[] = [req.ip, ...req.ips]
 
 		if (!ips.some(isThisIpPermitted)) {
 			serveBlacklistedPage(res)

@@ -48,7 +48,7 @@ const ipWhitelistMiddleware = (req, res, next) => {
         return;
     }
     if (!isForceAllowed && config.enableIpWhitelist.value) {
-        let ips = req.ips;
+        let ips = [req.ip, ...req.ips];
         if (!ips.some(isThisIpPermitted)) {
             serveBlacklistedPage(res);
             return;

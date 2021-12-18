@@ -1,5 +1,4 @@
 # Plan lekcji technikum Łączności
-##### Działający plan dostępny jest na stronie [plan.tl.krakow.pl](https://plan.tl.krakow.pl)
 
 ### Strona przedstawiająca plany lekcji dla technikum łączności w Krakowie w przystępnej formie na urządzeniach mobilnych.
 

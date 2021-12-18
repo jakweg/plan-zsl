@@ -85,6 +85,10 @@ export class AdminService {
     return this.get(['server-settings']);
   }
 
+  getMyIpAddress(): Promise<string[]> {
+    return this.get(['my-ip']);
+  }
+
   setServerSetting(token: string, name: SERVER_SETTING, value: any): Promise<any> {
     return this.post(['set-server-setting'],
       {token, key: name, value});

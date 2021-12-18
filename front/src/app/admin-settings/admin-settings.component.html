@@ -59,4 +59,9 @@
     </p>
     <textarea rows="20" [(ngModel)]="ipFilterLines" (input)="linesAreModified=true"></textarea>
   </div>
+
+  <div *ngIf="ipAddresses && ipAddresses.length > 0">
+    <p>Twoje połączenie nawiązano używając tych adresów:</p>
+    <p *ngFor="let ip of ipAddresses">{{ip}}</p>
+  </div>
 </div>

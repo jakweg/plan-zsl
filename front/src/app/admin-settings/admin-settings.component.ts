@@ -25,12 +25,14 @@ export class AdminSettingsComponent implements OnInit {
   ipFilterLines: string;
   linesAreModified = false;
   error;
+  ipAddresses: string[];
 
   constructor(private admin: AdminService) {
   }
 
   ngOnInit() {
     this.refreshSettings();
+    this.fetchIpAddress();
   }
 
   setProperty(key: SERVER_SETTING, value: string | string[]) {
@@ -87,4 +89,8 @@ export class AdminSettingsComponent implements OnInit {
         e => this.error = e);
   }
 
+  private fetchIpAddress() {
+    this.admin.getMyIpAddress()
+        .then(result => this.ipAddresses = result);
+  }
 }

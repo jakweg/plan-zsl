@@ -10,7 +10,7 @@ type PromiseProducer = () => Promise<any>;
 export interface TimetableStore {
   getAvailableTimetablesList(): Promise<TimetableInfo[]>;
 
-  getCurrentTimetableId(): Promise<number>;
+  getCurrentTimetableId(forceFromNetwork: boolean): Promise<number>;
 
   selectTimetable(id: number): void;
 
@@ -35,9 +35,14 @@ export class NoCacheStore implements TimetableStore {
     return this.httpGet2Promise(['timetable', (+timetableId).toString(), 'get', name]);
   }
 
-  async getCurrentTimetableId(): Promise<number> {
-    const id = AppService.selectedTimetableId;
-    return id || await this.getAutoTimetable();
+  async getCurrentTimetableId(forceFromNetwork: boolean): Promise<number> {
+    let returnValue = AppService.selectedTimetableId;
+    if (forceFromNetwork || !returnValue) {
+      const fromNetwork = await this.getAutoTimetable();
+      if (!returnValue)
+        returnValue = fromNetwork;
+    }
+    return returnValue;
   }
 
   selectTimetable(id: number) {

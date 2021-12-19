@@ -27,13 +27,13 @@ export class ApiService {
   }
 
   async getTimetablesSummary(): Promise<any> {
-    return this.timetables.getTimetableSummary(await this.timetables.getCurrentTimetableId());
+    return this.timetables.getTimetableSummary(await this.timetables.getCurrentTimetableId(false));
   }
 
   async getTimetable(shortName: string): Promise<any> {
     AppService.notifyTimetableOpened(shortName);
     return this.timetables.getPlan(
-      await this.timetables.getCurrentTimetableId(), shortName.toLowerCase());
+      await this.timetables.getCurrentTimetableId(false), shortName.toLowerCase());
   }
 
   getAvailableTimetables(): Promise<TimetableInfo[]> {
@@ -58,7 +58,7 @@ export class ApiService {
 
   pingCurrentIfNeeded() {
     if (AppService.cacheCurrentIdUntil < new Date().getTime() && navigator.onLine)
-      this.timetables.getCurrentTimetableId().then(() => {
+      this.timetables.getCurrentTimetableId(true).then(() => {
       });
   }
 

@@ -5,3 +5,5 @@ back/node_modules
 front/node_modules
 back/package-lock.json
 front/package-lock.json
+__pycache__
+db.sqlite3

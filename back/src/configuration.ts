@@ -29,7 +29,7 @@ export function deleteFolderRecursive(path: string) {
 }
 
 function generateNewTimetableId() {
-	return Date.now() % ((Math.random() * 1_000_000_000) | 0) | 0
+	return Date.now() % ((Math.random() * 1000000000) | 0) | 0;
 }
 
 export class Configuration {
@@ -70,23 +70,23 @@ export class Configuration {
 	private nextTimetableChangeTime: number = null
 
 	private constructor() {
-		this.prefs.fromJSON(JSON.parse(readFileSync(Configuration.CONFIG_PATH, {encoding: 'utf8'})))
+		this.prefs.fromJSON(JSON.parse(readFileSync(Configuration.CONFIG_PATH, { encoding: 'utf8' })))
 
 		this.prefs.changedListener = () => {
-			writeFileSync(Configuration.CONFIG_PATH, JSON.stringify(this.prefs.toJSON(), null, 2), {encoding: 'utf8'})
+			writeFileSync(Configuration.CONFIG_PATH, JSON.stringify(this.prefs.toJSON(), null, 2), { encoding: 'utf8' })
 		}
 
 		this.autoTimetableRotation.changeListeners.push(() => this.doAutoTimetableSelection())
 
 		if (!existsSync(this.timetablesPath.value)) {
 			console.warn('Timetables folder does not exists, creating one')
-			mkdirSync(this.timetablesPath.value, {recursive: true})
+			mkdirSync(this.timetablesPath.value, { recursive: true })
 		}
 
 		if (existsSync(`${this.timetablesPath}/.config.json`)) {
 			const conf = JSON.parse(
 				readFileSync(`${this.timetablesPath}/.config.json`,
-					{encoding: 'utf8'}))
+					{ encoding: 'utf8' }))
 
 			this.timetablesMap.clear()
 			for (const t of conf.timetables) {
@@ -151,7 +151,7 @@ export class Configuration {
 			{
 				timetables: Array.from(this.timetablesMap.values()),
 			},
-		), {encoding: 'utf8'})
+		), { encoding: 'utf8' })
 	}
 
 	registerNewTimetable(name: string, activateSince: number): TimetableInfo {
@@ -218,7 +218,7 @@ export class Configuration {
 			i++
 		}
 		if (this.currentTimetableId != selectingTimetableId) {
-			console.warn('Selecting new timetable', {id: selectingTimetableId})
+			console.warn('Selecting new timetable', { id: selectingTimetableId })
 			this.currentTimetableId.value = selectingTimetableId
 		}
 		this.nextTimetableChangeTime = i > 0 ? timetables[i - 1].isValidFrom : null

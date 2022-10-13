@@ -48,8 +48,8 @@ export const initAdminRoutes = (app: Express) => {
 
 
 	const VERIFIED_USER_FILTER = (req: express.Request,
-	                              res: express.Response,
-	                              next: any) => {
+		res: express.Response,
+		next: any) => {
 		if (((<any>req).session && (<any>req).session.signedIn))
 			next()
 		else
@@ -57,8 +57,8 @@ export const initAdminRoutes = (app: Express) => {
 	}
 
 	const VERIFIED_USER_AND_CSRF_FILTER = (req: express.Request,
-	                                       res: express.Response,
-	                                       next: any) =>
+		res: express.Response,
+		next: any) =>
 		POST_DATA_HANDLER(req, res, () =>
 			VERIFIED_USER_FILTER(req, res, () => {
 				if (req.body.token && req.body.token === (<any>req).session.csrfToken) {
@@ -73,7 +73,7 @@ export const initAdminRoutes = (app: Express) => {
 		res.type('application/json')
 			.send(config
 				.getTimetablesList()
-				.map(e => ({...e, active: e.id === config.currentTimetableId.value})))
+				.map(e => ({ ...e, active: e.id === config.currentTimetableId.value })))
 	})
 
 	adminRoute.get('/server-settings', VERIFIED_USER_FILTER, (req, res) => {
@@ -228,14 +228,14 @@ export const initAdminRoutes = (app: Express) => {
 			if (!file)
 				return haltWithReason(res, 406, 'File not given')
 
-			readFile(file.path, (err, data) => {
+			readFile(file.filepath, (err, data) => {
 				if (err)
 					return haltWithReason(res, 500, 'Unable to read tmp file')
 
 				let decoded = ''
 				const decoder = new TextDecoder('windows-1250')
 				try {
-					decoded = decoder.decode(data, {fatal: true})
+					decoded = decoder.decode(data, { fatal: true })
 				} catch (err) {
 					return haltWithReason(res, 422, 'Unable to decode xml file')
 				}
@@ -251,7 +251,7 @@ export const initAdminRoutes = (app: Express) => {
 						timetable.dumpSelfIntoFolder(config.getTimetablePathById(info.id))
 						config.saveTimetablesConfig()
 
-						res.status(201).send({newTimetableId: info.id})
+						res.status(201).send({ newTimetableId: info.id })
 					} catch (err) {
 						console.error(err)
 

@@ -15,18 +15,18 @@ class TimetableInfo {
 exports.TimetableInfo = TimetableInfo;
 function deleteFolderRecursive(path) {
     let files = [];
-    if (fs_1.existsSync(path)) {
-        files = fs_1.readdirSync(path);
+    if ((0, fs_1.existsSync)(path)) {
+        files = (0, fs_1.readdirSync)(path);
         files.forEach(function (file) {
             let curPath = path + '/' + file;
-            if (fs_1.lstatSync(curPath).isDirectory()) { // recurse
+            if ((0, fs_1.lstatSync)(curPath).isDirectory()) { // recurse
                 deleteFolderRecursive(curPath);
             }
             else { // delete file
-                fs_1.unlinkSync(curPath);
+                (0, fs_1.unlinkSync)(curPath);
             }
         });
-        fs_1.rmdirSync(path);
+        (0, fs_1.rmdirSync)(path);
     }
 }
 exports.deleteFolderRecursive = deleteFolderRecursive;
@@ -58,17 +58,17 @@ class Configuration {
             .registerIn(this.prefs);
         this.timetablesMap = new Map();
         this.nextTimetableChangeTime = null;
-        this.prefs.fromJSON(JSON.parse(fs_1.readFileSync(Configuration.CONFIG_PATH, { encoding: 'utf8' })));
+        this.prefs.fromJSON(JSON.parse((0, fs_1.readFileSync)(Configuration.CONFIG_PATH, { encoding: 'utf8' })));
         this.prefs.changedListener = () => {
-            fs_1.writeFileSync(Configuration.CONFIG_PATH, JSON.stringify(this.prefs.toJSON(), null, 2), { encoding: 'utf8' });
+            (0, fs_1.writeFileSync)(Configuration.CONFIG_PATH, JSON.stringify(this.prefs.toJSON(), null, 2), { encoding: 'utf8' });
         };
         this.autoTimetableRotation.changeListeners.push(() => this.doAutoTimetableSelection());
-        if (!fs_1.existsSync(this.timetablesPath.value)) {
+        if (!(0, fs_1.existsSync)(this.timetablesPath.value)) {
             console.warn('Timetables folder does not exists, creating one');
-            fs_1.mkdirSync(this.timetablesPath.value, { recursive: true });
+            (0, fs_1.mkdirSync)(this.timetablesPath.value, { recursive: true });
         }
-        if (fs_1.existsSync(`${this.timetablesPath}/.config.json`)) {
-            const conf = JSON.parse(fs_1.readFileSync(`${this.timetablesPath}/.config.json`, { encoding: 'utf8' }));
+        if ((0, fs_1.existsSync)(`${this.timetablesPath}/.config.json`)) {
+            const conf = JSON.parse((0, fs_1.readFileSync)(`${this.timetablesPath}/.config.json`, { encoding: 'utf8' }));
             this.timetablesMap.clear();
             for (const t of conf.timetables) {
                 this.timetablesMap.set(t.id, new TimetableInfo(t.id, t.name, t.isValidFrom));
@@ -92,7 +92,7 @@ class Configuration {
             && !this.getTimetablesList().find(it => it.id == this.currentTimetableId.value)) {
             throw new Error('Cannot find timetable with id ' + this.currentTimetableId.value);
         }
-        timers_1.setInterval(() => this.doAutoTimetableSelection(), 5000);
+        (0, timers_1.setInterval)(() => this.doAutoTimetableSelection(), 5000);
     }
     get nextTimetableChange() {
         return this.nextTimetableChangeTime ? this.nextTimetableChangeTime : null;
@@ -105,7 +105,7 @@ class Configuration {
     }
     static get() {
         if (!Configuration.INSTANCE) {
-            if (!fs_1.existsSync(Configuration.CONFIG_PATH))
+            if (!(0, fs_1.existsSync)(Configuration.CONFIG_PATH))
                 throw new Error(`Config file does not exists here: ${Configuration.CONFIG_PATH}`);
             try {
                 this.INSTANCE = new Configuration();
@@ -117,7 +117,7 @@ class Configuration {
         return this.INSTANCE;
     }
     saveTimetablesConfig() {
-        fs_1.writeFileSync(`${this.timetablesPath}/.config.json`, JSON.stringify({
+        (0, fs_1.writeFileSync)(`${this.timetablesPath}/.config.json`, JSON.stringify({
             timetables: Array.from(this.timetablesMap.values()),
         }), { encoding: 'utf8' });
     }

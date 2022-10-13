@@ -15,7 +15,7 @@ const global_1 = require("./global");
 const initAdminRoutes = (app) => {
     const config = configuration_1.Configuration.get();
     const generateCsfrToken = () => Array.from(new Array(64), () => (Math.random() * Math.pow(2, 31) | 0).toString(16)).join('');
-    const adminRoute = express_1.default();
+    const adminRoute = (0, express_1.default)();
     app.use('/admin', adminRoute);
     adminRoute.get('/status', (req, res) => {
         res.send({
@@ -47,15 +47,15 @@ const initAdminRoutes = (app) => {
         if ((req.session && req.session.signedIn))
             next();
         else
-            global_1.haltWithReason(res, 401, 'Unauthorized user');
+            (0, global_1.haltWithReason)(res, 401, 'Unauthorized user');
     };
-    const VERIFIED_USER_AND_CSRF_FILTER = (req, res, next) => global_1.POST_DATA_HANDLER(req, res, () => VERIFIED_USER_FILTER(req, res, () => {
+    const VERIFIED_USER_AND_CSRF_FILTER = (req, res, next) => (0, global_1.POST_DATA_HANDLER)(req, res, () => VERIFIED_USER_FILTER(req, res, () => {
         if (req.body.token && req.body.token === req.session.csrfToken) {
             req.session.csrfToken = generateCsfrToken();
             next();
         }
         else
-            global_1.haltWithReason(res, 401, 'Invalid csrf token');
+            (0, global_1.haltWithReason)(res, 401, 'Invalid csrf token');
     }));
     adminRoute.get('/list-timetables', VERIFIED_USER_FILTER, (req, res) => {
         res.type('application/json')
@@ -80,7 +80,7 @@ const initAdminRoutes = (app) => {
         const key = req.body.key;
         const value = req.body.value;
         if (!key || !value)
-            return global_1.haltWithReason(res, 400, 'Invalid setting');
+            return (0, global_1.haltWithReason)(res, 400, 'Invalid setting');
         switch (key) {
             case 'auto-rotation':
                 switch (value) {
@@ -91,7 +91,7 @@ const initAdminRoutes = (app) => {
                         config.autoTimetableRotation.value = false;
                         break;
                     default:
-                        return global_1.haltWithReason(res, 400, 'Invalid value');
+                        return (0, global_1.haltWithReason)(res, 400, 'Invalid value');
                 }
                 break;
             case 'use-ip-filter':
@@ -103,7 +103,7 @@ const initAdminRoutes = (app) => {
                         config.enableIpWhitelist.value = false;
                         break;
                     default:
-                        return global_1.haltWithReason(res, 400, 'Invalid value');
+                        return (0, global_1.haltWithReason)(res, 400, 'Invalid value');
                 }
                 break;
             case 'whitelisted-ips':
@@ -114,11 +114,11 @@ const initAdminRoutes = (app) => {
                 if (isValid)
                     config.whitelistedIps.value = value;
                 else
-                    return global_1.haltWithReason(res, 400, 'Invalid value');
+                    return (0, global_1.haltWithReason)(res, 400, 'Invalid value');
                 break;
             case 'timetable-info-cache-duration':
                 if (isNaN(+value) || +value < 0)
-                    return global_1.haltWithReason(res, 400, 'Invalid value');
+                    return (0, global_1.haltWithReason)(res, 400, 'Invalid value');
                 config.currentTimetableCacheSeconds.value = +value;
                 break;
         }
@@ -128,7 +128,7 @@ const initAdminRoutes = (app) => {
         const id = +req.params.id;
         const current = config.getTimetablesList().find(e => e.id === id);
         if (!current)
-            return global_1.haltWithReason(res, 400, 'Plan not found');
+            return (0, global_1.haltWithReason)(res, 400, 'Plan not found');
         res.type('application/json')
             .send({
             selected: config.currentTimetableId.value === id,
@@ -143,7 +143,7 @@ const initAdminRoutes = (app) => {
         const id = +req.params.id;
         const current = config.getTimetablesList().find(e => e.id === id);
         if (!current)
-            return global_1.haltWithReason(res, 400, 'Plan not found');
+            return (0, global_1.haltWithReason)(res, 400, 'Plan not found');
         if (req.body.name && req.body.name.length > 3 && req.body.name.length < 40)
             current.name = req.body.name;
         if (req.body.date && req.body.date > 0)
@@ -155,9 +155,9 @@ const initAdminRoutes = (app) => {
     adminRoute.get('/select-timetable/:id', VERIFIED_USER_FILTER, (req, res) => {
         const id = +req.params.id;
         if (config.autoTimetableRotation.value)
-            return global_1.haltWithReason(res, 405, 'Auto rotation is enabled!');
+            return (0, global_1.haltWithReason)(res, 405, 'Auto rotation is enabled!');
         if (!config.timetableExists(id))
-            return global_1.haltWithReason(res, 400, 'Plan not found');
+            return (0, global_1.haltWithReason)(res, 400, 'Plan not found');
         config.currentTimetableId.value = id;
         res.sendStatus(204);
     });
@@ -168,7 +168,7 @@ const initAdminRoutes = (app) => {
     adminRoute.post('/delete-timetable/:id', VERIFIED_USER_AND_CSRF_FILTER, (req, res) => {
         const id = +req.params.id;
         if (!config.timetableExists(id))
-            return global_1.haltWithReason(res, 404, 'Plan not found');
+            return (0, global_1.haltWithReason)(res, 404, 'Plan not found');
         config.deleteTimetable(id, ok => {
             res.sendStatus(ok ? 204 : 400);
         });
@@ -178,30 +178,30 @@ const initAdminRoutes = (app) => {
         // form.maxFileSize = 50 * 1024 * 1024
         form.parse(req, (err, fields, files) => {
             if (err)
-                return global_1.haltWithReason(res, 400, err.message);
+                return (0, global_1.haltWithReason)(res, 400, err.message);
             const name = (fields.name || '').toString().trim();
             if (!name || name.length < 5 || name.length > 40)
-                return global_1.haltWithReason(res, 400, 'Invalid name');
+                return (0, global_1.haltWithReason)(res, 400, 'Invalid name');
             const activeSinceTimestamp = new Date(isNaN(+fields.isValidFrom) ? fields.isValidFrom.toString() : +files.isValidFrom).getTime();
             if (!activeSinceTimestamp)
-                return global_1.haltWithReason(res, 400, 'Invalid date');
+                return (0, global_1.haltWithReason)(res, 400, 'Invalid date');
             const file = files.file;
             if (!file)
-                return global_1.haltWithReason(res, 406, 'File not given');
-            fs_1.readFile(file.path, (err, data) => {
+                return (0, global_1.haltWithReason)(res, 406, 'File not given');
+            (0, fs_1.readFile)(file.filepath, (err, data) => {
                 if (err)
-                    return global_1.haltWithReason(res, 500, 'Unable to read tmp file');
+                    return (0, global_1.haltWithReason)(res, 500, 'Unable to read tmp file');
                 let decoded = '';
                 const decoder = new text_encoding_1.TextDecoder('windows-1250');
                 try {
                     decoded = decoder.decode(data, { fatal: true });
                 }
                 catch (err) {
-                    return global_1.haltWithReason(res, 422, 'Unable to decode xml file');
+                    return (0, global_1.haltWithReason)(res, 422, 'Unable to decode xml file');
                 }
-                xml2js_1.parseString(decoded, (err, result) => {
+                (0, xml2js_1.parseString)(decoded, (err, result) => {
                     if (err)
-                        return global_1.haltWithReason(res, 400, 'Unable to parse XML file');
+                        return (0, global_1.haltWithReason)(res, 400, 'Unable to parse XML file');
                     try {
                         const timetable = timetable_database_1.TimetableDatabase.fromXml(result);
                         const info = config.registerNewTimetable(name, activeSinceTimestamp);
@@ -211,7 +211,7 @@ const initAdminRoutes = (app) => {
                     }
                     catch (err) {
                         console.error(err);
-                        return global_1.haltWithReason(res, 400, 'An error was thrown while handling timetable');
+                        return (0, global_1.haltWithReason)(res, 400, 'An error was thrown while handling timetable');
                     }
                 });
             });

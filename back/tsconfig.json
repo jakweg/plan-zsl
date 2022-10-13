@@ -9,8 +9,12 @@
     "outDir": "dist",
     "watch": false
   },
-  "lib": ["es2015"],
-  "include": ["src/*"],
+  "lib": [
+    "es2015"
+  ],
+  "include": [
+    "src/*"
+  ],
   "exclude": [
     "dist",
     "node_modules"

@@ -1,7 +1,11 @@
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -31,9 +35,9 @@ const timetable_1 = require("./routes/timetable");
 try {
     const config = configuration_1.Configuration.get();
     const port = +process.env.PORT || 8080;
-    const app = express_1.default();
+    const app = (0, express_1.default)();
     app.set('trust proxy', true);
-    app.use(express_session_1.default({
+    app.use((0, express_session_1.default)({
         name: 'sid',
         secret: Array.from(new Array(16), () => (Math.random() * Math.pow(2, 31) | 0).toString(16)).join(''),
         resave: false,
@@ -62,11 +66,11 @@ try {
     if (config.serveFrontendFrom.value) {
         console.info('Serving content from ' + config.serveFrontendFrom.value);
         console.info('Registering API at path /api ');
-        const api = express_1.default();
-        timetable_1.initTimetableRoutes(api);
-        admin_1.initAdminRoutes(api);
+        const api = (0, express_1.default)();
+        (0, timetable_1.initTimetableRoutes)(api);
+        (0, admin_1.initAdminRoutes)(api);
         app.use('/api', api);
-        app.use('/assets', express_1.static(config.serveFrontendFrom.value + '/assets', {
+        app.use('/assets', (0, express_1.static)(config.serveFrontendFrom.value + '/assets', {
             lastModified: true,
             cacheControl: true,
             dotfiles: 'ignore',
@@ -76,7 +80,7 @@ try {
             maxAge: 30 * 24 * 60 * 60 * 1000,
             immutable: true,
         }));
-        app.use(express_1.static(config.serveFrontendFrom.value, {
+        app.use((0, express_1.static)(config.serveFrontendFrom.value, {
             lastModified: true,
             cacheControl: true,
             dotfiles: 'ignore',
@@ -92,8 +96,8 @@ try {
     }
     else {
         console.info('Serving only API at / ');
-        timetable_1.initTimetableRoutes(app);
-        admin_1.initAdminRoutes(app);
+        (0, timetable_1.initTimetableRoutes)(app);
+        (0, admin_1.initAdminRoutes)(app);
         app.all('*', (req, res) => res.status(404).end());
     }
     app.listen(port, '0.0.0.0', () => {

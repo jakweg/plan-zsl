@@ -28,7 +28,7 @@ const isThisIpPermitted = (ip) => {
 };
 function serveBlacklistedPage(res) {
     const config = configuration_1.Configuration.get();
-    fs_1.readFile(config.serveFrontendFrom.value + '/assets/non-whitelisted-ip.html', (err, data) => {
+    (0, fs_1.readFile)(config.serveFrontendFrom.value + '/assets/non-whitelisted-ip.html', (err, data) => {
         if (err)
             res.sendStatus(401);
         else {

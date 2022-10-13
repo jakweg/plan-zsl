@@ -56,17 +56,17 @@ class TimetableDatabase {
         // return new Map(parsed.map((it: { [x: string]: string; }) => [it[groupKey], it]))
     }
     dumpSelfIntoFolder(path) {
-        if (fs_1.existsSync(path))
-            fs_1.rmdirSync(path, { recursive: true });
-        fs_1.mkdirSync(path, { recursive: true });
-        fs_1.writeFileSync(path + '/database.json', JSON.stringify(this), { encoding: 'utf8' });
-        fs_1.writeFileSync(path + '/summary.json', JSON.stringify(this.getShortsForEverything()), { encoding: 'utf8' });
-        fs_1.mkdirSync(path + '/plans');
+        if ((0, fs_1.existsSync)(path))
+            (0, fs_1.rmdirSync)(path, { recursive: true });
+        (0, fs_1.mkdirSync)(path, { recursive: true });
+        (0, fs_1.writeFileSync)(path + '/database.json', JSON.stringify(this), { encoding: 'utf8' });
+        (0, fs_1.writeFileSync)(path + '/summary.json', JSON.stringify(this.getShortsForEverything()), { encoding: 'utf8' });
+        (0, fs_1.mkdirSync)(path + '/plans');
         const obj = this.generateJsonForEverything();
         for (const key in obj) {
             if (key.includes('..'))
                 throw Error(`Path (${key}) not allowed due to '..'`);
-            fs_1.writeFileSync(`${path}/plans/${key.toLowerCase()}`, JSON.stringify(obj[key]), { encoding: 'utf8' });
+            (0, fs_1.writeFileSync)(`${path}/plans/${key.toLowerCase()}`, JSON.stringify(obj[key]), { encoding: 'utf8' });
         }
         return obj;
     }
@@ -202,7 +202,7 @@ class TimetableDatabase {
         return responseObject;
     }
     getTimetableByTeacherId(teacherId) {
-        var _a, _b, _c;
+        var _a, _b;
         const teacher = this.teachers[teacherId];
         if (!teacher)
             throw new Error(`Teacher with id ${teacherId} not found!`);
@@ -238,7 +238,7 @@ class TimetableDatabase {
                             classroom: (_a = classroom === null || classroom === void 0 ? void 0 : classroom.short) !== null && _a !== void 0 ? _a : '',
                             teacher: teacher.short,
                             entireClass: (_b = group === null || group === void 0 ? void 0 : group.entireClass) !== null && _b !== void 0 ? _b : true,
-                            group: (_c = group) === null || _c === void 0 ? void 0 : _c.name,
+                            group: group === null || group === void 0 ? void 0 : group.name,
                         });
                     }
                 }

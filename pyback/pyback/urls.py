@@ -13,8 +13,28 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf.urls.static import static
+from django.http import HttpResponse
 from django.urls import include, path
 
+
+def index(request, **kwargs):
+    with open('../front/dist/zsltimetable/index.html', 'r') as f:
+        return HttpResponse(f.read())
+
+
+def handler404(r, e): return index(r)
+
+
 urlpatterns = [
-    path('admin/', include('admin.urls')),
-]
+    path('api/admin/', include('admin.urls')),
+    path('', index),
+    path('klasy', index),
+    path('klasy/<str:val>', index),
+    path('nauczyciele', index),
+    path('plan/<str:val>', index),
+    path('sale', index),
+    path('wybierz-plan', index),
+    path('admin', index),
+    path('admin/<str:val>', index),
+] + static('/', document_root='../front/dist/zsltimetable')

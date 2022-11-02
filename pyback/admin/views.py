@@ -1,6 +1,6 @@
 import json
 
-from database.database import from_xml
+from database.database import dump_self_into_folder, from_xml
 from django import forms
 from django.http import HttpResponse
 from pyback.configuration import (delete_timetable, get_config_bool,
@@ -174,5 +174,6 @@ def new_timetable(request):
         file_content = f.read().decode('windows-1250')
 
     db = from_xml(file_content)
+    dump_self_into_folder('./tmp-plan', db)
 
     return HttpResponse(status=400)

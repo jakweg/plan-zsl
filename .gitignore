@@ -7,3 +7,4 @@ back/package-lock.json
 front/package-lock.json
 __pycache__
 db.sqlite3
+tmp-plan

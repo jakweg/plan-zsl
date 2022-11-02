@@ -1,5 +1,6 @@
 import json
 
+from database.database import from_xml
 from django import forms
 from django.http import HttpResponse
 from pyback.configuration import (delete_timetable, get_config_bool,
@@ -160,11 +161,18 @@ def new_timetable(request):
 
     form = UploadFileForm(request.POST, request.FILES)
 
-    name = request.POST['name'][0]
-    isValidFrom = int(request.POST['isValidFrom'][0])
+    name = request.POST['name']
+    [year, month, day] = map(int, request.POST['isValidFrom'].split('-'))
+    import datetime
+    isValidFrom = int(datetime.datetime(year, month, day).timestamp() * 1000)
     file = request.FILES['file']
     with open('/tmp/timetable-upload-file', 'wb') as f:
         for chunk in file.chunks():
             f.write(chunk)
-    print(file)
+
+    with open('/tmp/timetable-upload-file', 'rb') as f:
+        file_content = f.read().decode('windows-1250')
+
+    db = from_xml(file_content)
+
     return HttpResponse(status=400)

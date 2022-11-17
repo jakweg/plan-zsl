@@ -99,7 +99,7 @@ def get_subjectsShortsAndNames(db):
 
 def get_shorts_for_everything(db):
     return {
-        'classes': get_grouped_classes(db),
+        'groupedClasses': get_grouped_classes(db),
         'teachers': get_teacher_shorts_and_names(db),
         'classrooms': get_classroomShortsAndNames(db),
         'subjects': get_subjectsShortsAndNames(db),
@@ -166,11 +166,130 @@ def get_timetable_by_class_id(db, class_id):
     return response_object
 
 
+def get_timetable_by_teacher_id(db, teacher_id):
+    teacher = db['teachers'][teacher_id]
+    response_object = {
+        'type': 'T',
+        'fullName': teacher['name'],
+        'periods': list(map(lambda x: {'num': x['period'], 'start': x['startTime'], 'end': x['endTime']}, db['periods']))
+    }
+
+    for [keyName, dayId] in DAY_IDS:
+        found_lessons = []
+        for [lessonId, lesson] in db['lessons'].items():
+            if lesson['teacherId'] != teacher_id:
+                continue
+
+            cards = filter(
+                lambda it: it['day'] == dayId,
+                filter(
+                    lambda it: it['lessonId'] == lessonId,
+                    db['cards']
+                )
+            )
+
+            subject = db['subjects'][lesson['subjectId']]
+
+            for card in cards:
+                classroom = db['classrooms'][lesson['classroomId']
+                                             ] if lesson['classroomId'] in db['classrooms'] else None
+
+                for groupId in lesson['groupIds']:
+                    group = db['groups'][groupId]
+
+                    found_lessons.append({
+                        'class': '' if group is None else db['classes'][group['classId']]['short'],
+                        'subject': subject['short'],
+                        'period': card['period'],
+                        'classroom': classroom['short'] if classroom is not None else '',
+                        'teacher': teacher['short'],
+                        'entireClass': group['entireClass'],
+                        'groupNum': group['groupNumber'],
+                        'group': group['name'],
+                    })
+
+        grouped_by_period = group_by_selector(
+            found_lessons, lambda g: g['period'])
+        output_array = []
+        for period in db['periods']:
+            if period['name'] in grouped_by_period:
+                array = grouped_by_period[period['name']]  # sort it?
+            else:
+                array = None
+            output_array.append(array)
+
+        response_object[keyName] = output_array
+
+    return response_object
+
+
+def get_timetable_by_classroom_id(db, classroom_id):
+    classroom = db['classrooms'][classroom_id]
+    response_object = {
+        'type': 'R',
+        'fullName': classroom['name'],
+        'periods': list(map(lambda x: {'num': x['period'], 'start': x['startTime'], 'end': x['endTime']}, db['periods']))
+    }
+
+    for [keyName, dayId] in DAY_IDS:
+        found_lessons = []
+        for [lessonId, lesson] in db['lessons'].items():
+            if classroom_id not in lesson['classroomIds']:
+                continue
+
+            cards = filter(
+                lambda it: it['day'] == dayId,
+                filter(
+                    lambda it: it['lessonId'] == lessonId,
+                    filter(
+                        lambda it: it['classroomId'] == classroom_id,
+                        db['cards']
+                    )
+                )
+            )
+
+            subject = db['subjects'][lesson['subjectId']]
+            teacher = db['teachers'][lesson['teacherId']]
+
+            for card in cards:
+                for groupId in lesson['groupIds']:
+                    group = db['groups'][groupId]
+
+                    found_lessons.append({
+                        'class': '' if group is None else db['classes'][group['classId']]['short'],
+                        'subject': subject['short'],
+                        'period': card['period'],
+                        'teacher': teacher['short'],
+                        'entireClass': group['entireClass'],
+                        'group': group['name'],
+                    })
+
+        grouped_by_period = group_by_selector(
+            found_lessons, lambda g: g['period'])
+        output_array = []
+        for period in db['periods']:
+            if period['name'] in grouped_by_period:
+                array = grouped_by_period[period['name']]  # sort it?
+            else:
+                array = None
+            output_array.append(array)
+
+        response_object[keyName] = output_array
+
+    return response_object
+
+
 def generate_json_for_everything(db):
     every_timetable = {}
 
     for [id, obj] in db['classes'].items():
         every_timetable[obj['short']] = get_timetable_by_class_id(db, id)
+
+    for [id, obj] in db['teachers'].items():
+        every_timetable[obj['short']] = get_timetable_by_teacher_id(db, id)
+
+    for [id, obj] in db['classrooms'].items():
+        every_timetable[obj['short']] = get_timetable_by_classroom_id(db, id)
 
     return every_timetable
 

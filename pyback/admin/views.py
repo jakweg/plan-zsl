@@ -1,12 +1,14 @@
 import json
+import os
 
 from database.database import dump_self_into_folder, from_xml
 from django import forms
 from django.http import HttpResponse
+
 from pyback.configuration import (delete_timetable, get_config_bool,
                                   get_config_int, get_config_string,
-                                  get_timetables_list, set_config,
-                                  timetable_exists)
+                                  get_timetables_list, register_new_timetable,
+                                  set_config, timetable_exists)
 
 
 def status(request):
@@ -40,7 +42,7 @@ def list_timetables(request):
         return HttpResponse(status=401)
 
     def mapper(timetable):
-        obj = timetable.clone()
+        obj = timetable.copy()
         obj['active'] = obj['id'] == get_config_int('currentTimetableId')
         return obj
 
@@ -65,7 +67,7 @@ def server_settings(request):
     }))
 
 
-def set_server_settings(request):
+def set_server_setting(request):
     if not ('admin' in request.session and request.session['admin']):
         return HttpResponse(status=401)
 
@@ -175,5 +177,7 @@ def new_timetable(request):
 
     db = from_xml(file_content)
     dump_self_into_folder('./tmp-plan', db)
+    info = register_new_timetable(name, isValidFrom)
+    os.rename('./tmp-plan', f'timetables/{info["id"]}')
 
-    return HttpResponse(status=400)
+    return HttpResponse(status=200)

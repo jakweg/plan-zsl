@@ -76,9 +76,10 @@ def register_new_timetable(name: str, activate_since: int):
 
 
 def delete_timetable(id: int) -> bool:
+    id = str(id)
     if id not in __TIMETABLES_MAP:
         return False
-    if get_config_int('currentTimetableId') == id:
+    if get_config_int('currentTimetableId') == int(id):
         return False
 
     del __TIMETABLES_MAP[id]
@@ -87,11 +88,11 @@ def delete_timetable(id: int) -> bool:
 
 
 def get_timetables_list():
-    return list(sorted(__TIMETABLES_MAP.values(), key=lambda x: x['isValidFrom']))
+    return list(sorted(list(__TIMETABLES_MAP.values()), key=lambda x: x['isValidFrom']))
 
 
 def timetable_exists(id: int) -> bool:
-    return id in __TIMETABLES_MAP
+    return str(id) in __TIMETABLES_MAP
 
 
 def get_timetable_path_by_id(id: int) -> bool:

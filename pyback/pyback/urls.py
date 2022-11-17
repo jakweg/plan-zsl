@@ -28,6 +28,7 @@ def handler404(r, e): return index(r)
 
 urlpatterns = [
     path('api/admin/', include('admin.urls')),
+    path('api/timetable/', include('timetable.urls')),
     path('', index),
     path('klasy', index),
     path('klasy/<str:val>', index),

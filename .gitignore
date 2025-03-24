@@ -1,7 +1,7 @@
 timetables
 config.json
-package-lock.json
 back/node_modules
 front/node_modules
 back/package-lock.json
 front/package-lock.json
+dist
